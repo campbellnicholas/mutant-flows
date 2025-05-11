@@ -43,9 +43,11 @@ const DiceRoller: React.FC<DiceRollerProps> = ({ label }) => {
   const [diceConfig, setDiceConfig] = useState<DiceConfig>({ green: 0, yellow: 0, black: 0 });
   const [diceResults, setDiceResults] = useState<DieResult[]>([]);
   const [isRolling, setIsRolling] = useState(false);
-  const [rollHistory, setRollHistory] = useState<DieResult[][]>([]);
+  const [rollHistory, setRollHistory] = useState<Array<{ results: DieResult[]; description?: string }>>([]);
   const [currentSummary, setCurrentSummary] = useState<RollSummary>({ successes: 0, failures: 0, brokenGear: 0 });
   const [canPush, setCanPush] = useState(false);
+  const [rollDescription, setRollDescription] = useState('');
+  const [lastRollDescription, setLastRollDescription] = useState<string | undefined>();
 
   /**
    * Generates a new die result
@@ -140,13 +142,19 @@ const DiceRoller: React.FC<DiceRollerProps> = ({ label }) => {
           finalResults.push(generateDieResult(color as 'green' | 'yellow' | 'black'));
         }
       });
+      const description = rollDescription.trim() || `Roll ${rollHistory.length + 1}`;
       setDiceResults(finalResults);
-      setRollHistory(prev => [finalResults, ...prev].slice(0, 10));
+      setRollHistory(prev => [{
+        results: finalResults,
+        description
+      }, ...prev].slice(0, 10));
       setCurrentSummary(calculateRollSummary(finalResults));
       setCanPush(finalResults.some(isDiePushable));
       setIsRolling(false);
+      setRollDescription(''); // Clear the description after roll
+      setLastRollDescription(description); // Store the description for potential push
     }, 1000);
-  }, [isRolling, diceConfig, generateDieResult, calculateRollSummary, isDiePushable]);
+  }, [isRolling, diceConfig, generateDieResult, calculateRollSummary, isDiePushable, rollDescription, rollHistory.length]);
 
   /**
    * Handles pushing the roll
@@ -168,12 +176,16 @@ const DiceRoller: React.FC<DiceRollerProps> = ({ label }) => {
     // After animation, set final values
     setTimeout(() => {
       setDiceResults(newResults);
-      setRollHistory(prev => [newResults, ...prev].slice(0, 10));
+      setRollHistory(prev => [{
+        results: newResults,
+        description: lastRollDescription ? `${lastRollDescription} (Push)` : `Roll ${prev.length + 1} (Push)`
+      }, ...prev].slice(0, 10));
       setCurrentSummary(calculateRollSummary(newResults));
       setCanPush(false); // Can't push again
       setIsRolling(false);
+      setRollDescription(''); // Clear the description after push
     }, 1000);
-  }, [isRolling, diceResults, generateDieResult, calculateRollSummary, isDiePushable]);
+  }, [isRolling, diceResults, generateDieResult, calculateRollSummary, isDiePushable, lastRollDescription]);
 
   const renderValue = (val: number, color: 'green' | 'yellow' | 'black') => {
     switch (val) {
@@ -257,23 +269,33 @@ const DiceRoller: React.FC<DiceRollerProps> = ({ label }) => {
         </div>
       )}
 
-      <div className="action-buttons">
-        <button 
-          className="roll-button"
-          onClick={handleRoll}
-          disabled={isRolling || totalDice === 0}
-        >
-          {isRolling ? 'Rolling...' : `Roll ${totalDice} Dice`}
-        </button>
-
-        {canPush && !isRolling && (
+      <div className="roll-controls">
+        <input
+          type="text"
+          value={rollDescription}
+          onChange={(e) => setRollDescription(e.target.value)}
+          placeholder="What are you rolling for?"
+          className="roll-description-input"
+          disabled={isRolling}
+        />
+        <div className="action-buttons">
           <button 
-            className="push-button"
-            onClick={handlePush}
+            className="roll-button"
+            onClick={handleRoll}
+            disabled={isRolling || totalDice === 0}
           >
-            Push Roll
+            {isRolling ? 'Rolling...' : `Roll ${totalDice} Dice`}
           </button>
-        )}
+
+          {canPush && !isRolling && (
+            <button 
+              className="push-button"
+              onClick={handlePush}
+            >
+              Push Roll
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="roll-history">
@@ -283,21 +305,21 @@ const DiceRoller: React.FC<DiceRollerProps> = ({ label }) => {
             rollHistory.map((roll, rollIndex) => (
               <div 
                 key={rollIndex} 
-                className={`history-item ${roll.some(die => die.pushed) ? 'pushed' : ''}`}
+                className={`history-item ${roll.results.some(die => die.pushed) ? 'pushed' : ''}`}
               >
                 <div className="history-dice">
-                  Roll {rollHistory.length - rollIndex}:{' '}
-                  {roll.map(die => (
+                  {roll.description}:{' '}
+                  {roll.results.map(die => (
                     <span key={die.id} className={`die-value die-value-${die.color} ${die.pushed ? 'pushed' : ''}`}>
                       {renderValue(die.value, die.color)}
                     </span>
                   ))}
                 </div>
                 <div className="history-summary">
-                  <span className="summary-badge success">Successes: {calculateRollSummary(roll).successes}</span>
-                  <span className="summary-badge failure">Failures: {calculateRollSummary(roll).failures}</span>
-                  {roll.some(die => die.color === 'black') && (
-                    <span className="summary-badge broken">Broken: {calculateRollSummary(roll).brokenGear}</span>
+                  <span className="summary-badge success">Successes: {calculateRollSummary(roll.results).successes}</span>
+                  <span className="summary-badge failure">Failures: {calculateRollSummary(roll.results).failures}</span>
+                  {roll.results.some(die => die.color === 'black') && (
+                    <span className="summary-badge broken">Broken: {calculateRollSummary(roll.results).brokenGear}</span>
                   )}
                 </div>
               </div>
