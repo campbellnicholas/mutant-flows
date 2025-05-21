@@ -1,7 +1,7 @@
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+  width: 100%;
+  margin: 0;
+  padding: 0;
   text-align: center;
   color: #000;
 }
@@ -43,7 +43,15 @@
 }
 
 .app {
+  width: 100%;
   min-height: 100vh;
+  padding: 2rem;
+  box-sizing: border-box;
   background-color: #fafafa;
-  padding: 1rem;
+}
+
+@media (max-width: 768px) {
+  .app {
+    padding: 1rem;
+  }
 }

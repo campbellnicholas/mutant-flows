@@ -1,0 +1,336 @@
+.skill-roller {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 1rem;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.skill-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.skill-selector h3 {
+  margin: 0;
+  color: #333;
+  font-size: 1.25rem;
+}
+
+.skill-select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  background: white;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.skill-select:focus {
+  outline: none;
+  border-color: #646cff;
+  box-shadow: 0 0 0 2px rgba(100, 108, 255, 0.2);
+}
+
+.skill-info {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.skill-info h4 {
+  margin: 0 0 0.5rem;
+  color: #333;
+  font-size: 1.5rem;
+}
+
+.skill-info p {
+  margin: 0 0 1.5rem;
+  color: #666;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.dice-config {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.dice-input {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100px;
+  align-items: center;
+}
+
+.dice-input label {
+  font-weight: 500;
+  color: #333;
+  width: 100%;
+}
+
+.dice-input input {
+  padding: 0.5rem;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  width: 2rem;;
+  text-align: center;
+}
+
+.dice-input input:focus {
+  outline: none;
+  border-color: #646cff;
+  box-shadow: 0 0 0 2px rgba(100, 108, 255, 0.2);
+}
+
+.dice-input-field-attribute {
+  background-color: var(--color-die-green);
+  color: white;
+  border: 2px solid var(--color-die-green);
+}
+
+.dice-input-field-skill {
+  background-color: var(--color-die-yellow);
+  color: var(--color-die-yellow-text);
+  border: 2px solid var(--color-die-yellow);
+}
+
+.dice-input-field-gear {
+  background-color: var(--color-die-black);
+  color: white;
+  border: 2px solid var(--color-die-black);
+}
+
+.dice-input-field-attribute:focus,
+.dice-input-field-skill:focus,
+.dice-input-field-gear:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(100, 108, 255, 0.2);
+}
+
+.available-stunts {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.available-stunts h3 {
+  margin: 0 0 1rem;
+  color: #333;
+  font-size: 1.25rem;
+}
+
+.stunts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.stunts-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.stunts-modal {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  background-color: #fff;
+  width: 25%;
+  max-height: 80vh;
+  border-radius: 16px 0 0 0;
+  padding: 1.5rem;
+  box-shadow: -2px -2px 10px rgba(0, 0, 0, 0.1);
+  transform: translateY(0);
+  animation: slideUp 0.3s ease-out;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+@media (max-width: 768px) {
+  .stunts-modal {
+    width: 100%;
+    border-radius: 16px 16px 0 0;
+  }
+}
+
+.stunts-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.stunts-modal-header h3 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: #666;
+  cursor: pointer;
+  padding: 0.5rem;
+  line-height: 1;
+  transition: color 0.2s;
+}
+
+.close-button:hover {
+  color: #333;
+}
+
+.stunt-card {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.stunt-card.available {
+  border-left: 4px solid #28a745;
+}
+
+.stunt-card.unavailable {
+  border-left: 4px solid #dc3545;
+  opacity: 0.7;
+}
+
+.stunt-header {
+  width: 100%;
+  padding: 1rem;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.2s;
+}
+
+.stunt-header:hover {
+  background-color: #f1f3f5;
+}
+
+.stunt-title {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.stunt-title h4 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.required-successes {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.toggle-icon {
+  font-size: 0.8rem;
+  color: #666;
+  transition: transform 0.2s;
+}
+
+.toggle-icon.expanded {
+  transform: rotate(180deg);
+}
+
+.stunt-details {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+  padding: 0 1rem;
+}
+
+.stunt-details.expanded {
+  max-height: 200px;
+  padding: 1rem;
+  background-color: #fff;
+}
+
+.stunt-details p {
+  margin: 0;
+  color: #666;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.unavailable-message {
+  display: block;
+  margin-top: 0.5rem;
+  color: #dc3545;
+  font-size: 0.9rem;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.show-stunts-button {
+  width: 15em;
+  padding: 0.75rem;
+  margin-top: 1rem;
+  background-color: #646cff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 999;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.show-stunts-button:hover {
+  background-color: #535bf2;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+} 

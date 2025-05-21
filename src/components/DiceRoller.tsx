@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import Die from './Die';
 import './DiceRoller.css';
 
@@ -10,6 +10,7 @@ interface DieResult {
   value: number;
   color: 'green' | 'yellow' | 'black';
   pushed?: boolean;
+  isRolling: boolean;
 }
 
 /**
@@ -34,13 +35,21 @@ interface DiceConfig {
  * DiceRoller Component
  * @param {Object} props
  * @param {string} props.label - Label for this group of dice
+ * @param {Object} props.initialDice - Initial dice configuration
+ * @param {Function} props.onRollSummary - Callback when roll summary changes
  */
 interface DiceRollerProps {
   label?: string;
+  initialDice?: DiceConfig;
+  onRollSummary?: (summary: RollSummary) => void;
 }
 
-const DiceRoller: React.FC<DiceRollerProps> = ({ label }) => {
-  const [diceConfig, setDiceConfig] = useState<DiceConfig>({ green: 0, yellow: 0, black: 0 });
+const DiceRoller: React.FC<DiceRollerProps> = ({ 
+  label, 
+  initialDice = { green: 0, yellow: 0, black: 0 },
+  onRollSummary 
+}) => {
+  const [diceConfig, setDiceConfig] = useState<DiceConfig>(initialDice);
   const [diceResults, setDiceResults] = useState<DieResult[]>([]);
   const [isRolling, setIsRolling] = useState(false);
   const [rollHistory, setRollHistory] = useState<Array<{ results: DieResult[]; description?: string }>>([]);
@@ -48,6 +57,18 @@ const DiceRoller: React.FC<DiceRollerProps> = ({ label }) => {
   const [canPush, setCanPush] = useState(false);
   const [rollDescription, setRollDescription] = useState('');
   const [lastRollDescription, setLastRollDescription] = useState<string | undefined>();
+
+  // Update dice config when initialDice changes
+  useEffect(() => {
+    setDiceConfig(initialDice);
+  }, [initialDice]);
+
+  // Notify parent component of roll summary changes
+  useEffect(() => {
+    if (onRollSummary) {
+      onRollSummary(currentSummary);
+    }
+  }, [currentSummary, onRollSummary]);
 
   /**
    * Generates a new die result
@@ -57,7 +78,8 @@ const DiceRoller: React.FC<DiceRollerProps> = ({ label }) => {
   const generateDieResult = useCallback((color: 'green' | 'yellow' | 'black'): DieResult => ({
     id: Math.random().toString(36).substr(2, 9),
     value: Math.floor(Math.random() * 6) + 1,
-    color
+    color,
+    isRolling: false
   }), []);
 
   /**
@@ -101,18 +123,6 @@ const DiceRoller: React.FC<DiceRollerProps> = ({ label }) => {
   }, []);
 
   /**
-   * Updates the quantity of a specific color of dice
-   * @param {string} color - The color to update
-   * @param {number} value - The new quantity
-   */
-  const updateDiceQuantity = (color: keyof DiceConfig, value: number) => {
-    setDiceConfig(prev => ({
-      ...prev,
-      [color]: Math.max(0, value)
-    }));
-  };
-
-  /**
    * Handles the dice roll action
    * @returns {void}
    */
@@ -129,7 +139,7 @@ const DiceRoller: React.FC<DiceRollerProps> = ({ label }) => {
     const initialResults: DieResult[] = [];
     Object.entries(diceConfig).forEach(([color, count]) => {
       for (let i = 0; i < count; i++) {
-        initialResults.push(generateDieResult(color as 'green' | 'yellow' | 'black'));
+        initialResults.push({ ...generateDieResult(color as 'green' | 'yellow' | 'black'), isRolling: true });
       }
     });
     setDiceResults(initialResults);
@@ -139,7 +149,7 @@ const DiceRoller: React.FC<DiceRollerProps> = ({ label }) => {
       const finalResults: DieResult[] = [];
       Object.entries(diceConfig).forEach(([color, count]) => {
         for (let i = 0; i < count; i++) {
-          finalResults.push(generateDieResult(color as 'green' | 'yellow' | 'black'));
+          finalResults.push({ ...generateDieResult(color as 'green' | 'yellow' | 'black'), isRolling: false });
         }
       });
       const description = rollDescription.trim() || `Roll ${rollHistory.length + 1}`;
@@ -168,19 +178,26 @@ const DiceRoller: React.FC<DiceRollerProps> = ({ label }) => {
     // Keep non-pushable dice, re-roll pushable ones
     const newResults = diceResults.map(die => {
       if (isDiePushable(die)) {
-        return { ...generateDieResult(die.color), pushed: true };
+        return { ...die, isRolling: true };
       }
-      return die;
+      return { ...die, isRolling: false };
     });
+    setDiceResults(newResults);
 
     // After animation, set final values
     setTimeout(() => {
-      setDiceResults(newResults);
+      const finalResults = newResults.map(die => {
+        if (die.isRolling) {
+          return { ...generateDieResult(die.color), pushed: true, isRolling: false };
+        }
+        return die;
+      });
+      setDiceResults(finalResults);
       setRollHistory(prev => [{
-        results: newResults,
+        results: finalResults,
         description: lastRollDescription ? `${lastRollDescription} (Push)` : `Roll ${prev.length + 1} (Push)`
       }, ...prev].slice(0, 10));
-      setCurrentSummary(calculateRollSummary(newResults));
+      setCurrentSummary(calculateRollSummary(finalResults));
       setCanPush(false); // Can't push again
       setIsRolling(false);
       setRollDescription(''); // Clear the description after push
@@ -211,39 +228,12 @@ const DiceRoller: React.FC<DiceRollerProps> = ({ label }) => {
     <div className="dice-roller">
       {label && <h2 className="dice-label">{label}</h2>}
       
-      <div className="dice-controls">
-        <div className="dice-control-group">
-          <label>Green Dice:</label>
-          <div className="quantity-control">
-            <button onClick={() => updateDiceQuantity('green', diceConfig.green - 1)}>-</button>
-            <span>{diceConfig.green}</span>
-            <button onClick={() => updateDiceQuantity('green', diceConfig.green + 1)}>+</button>
-          </div>
-        </div>
-        <div className="dice-control-group">
-          <label>Yellow Dice:</label>
-          <div className="quantity-control">
-            <button onClick={() => updateDiceQuantity('yellow', diceConfig.yellow - 1)}>-</button>
-            <span>{diceConfig.yellow}</span>
-            <button onClick={() => updateDiceQuantity('yellow', diceConfig.yellow + 1)}>+</button>
-          </div>
-        </div>
-        <div className="dice-control-group">
-          <label>Black Dice:</label>
-          <div className="quantity-control">
-            <button onClick={() => updateDiceQuantity('black', diceConfig.black - 1)}>-</button>
-            <span>{diceConfig.black}</span>
-            <button onClick={() => updateDiceQuantity('black', diceConfig.black + 1)}>+</button>
-          </div>
-        </div>
-      </div>
-      
       <div className="dice-container">
         {diceResults.map((die) => (
           <Die
             key={die.id}
             value={die.value}
-            isRolling={isRolling}
+            isRolling={die.isRolling}
             onRollComplete={() => {}}
             color={die.color}
           />
