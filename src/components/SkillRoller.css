@@ -208,10 +208,12 @@
 }
 
 .stunt-card {
-  background-color: #f8f9fa;
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border);
   border-radius: 8px;
+  margin-bottom: 1rem;
   overflow: hidden;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
 }
 
 .stunt-card.available {
@@ -226,41 +228,33 @@
 .stunt-header {
   width: 100%;
   padding: 1rem;
-  background: none;
-  border: none;
-  text-align: left;
-  cursor: pointer;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  transition: background-color 0.2s;
+  background: var(--color-background-secondary);
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
 .stunt-header:hover {
-  background-color: #f1f3f5;
+  background: var(--color-background-hover);
 }
 
 .stunt-title {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
+  flex: 1;
+  text-align: left;
 }
 
 .stunt-title h4 {
   margin: 0;
-  font-size: 1.1rem;
-  color: #333;
-}
-
-.required-successes {
-  font-size: 0.9rem;
-  color: #666;
+  color: var(--color-text-primary);
 }
 
 .toggle-icon {
   font-size: 0.8rem;
-  color: #666;
-  transition: transform 0.2s;
+  color: var(--color-text-secondary);
+  transition: transform 0.3s ease;
 }
 
 .toggle-icon.expanded {
@@ -275,15 +269,13 @@
 }
 
 .stunt-details.expanded {
-  max-height: 200px;
+  max-height: 500px;
   padding: 1rem;
-  background-color: #fff;
 }
 
 .stunt-details p {
   margin: 0;
-  color: #666;
-  font-size: 0.95rem;
+  color: var(--color-text-secondary);
   line-height: 1.5;
 }
 

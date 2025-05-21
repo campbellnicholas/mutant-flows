@@ -107,7 +107,7 @@ const SkillRoller: React.FC = () => {
         }}
       />
 
-{selectedSkill && currentSuccesses >= 2 && !showStuntsModal && (
+      {selectedSkill && currentSuccesses >= 2 && !showStuntsModal && (
         <button 
           className="show-stunts-button"
           onClick={() => setShowStuntsModal(true)}
@@ -129,13 +129,12 @@ const SkillRoller: React.FC = () => {
           </div>
           <div className="stunts-list">
             {selectedSkill.stunts.map(stunt => {
-              const isAvailable = currentSuccesses >= stunt.requiredSuccesses;
               const isExpanded = expandedStuntId === stunt.id;
               
               return (
                 <div 
                   key={stunt.id} 
-                  className={`stunt-card ${isAvailable ? 'available' : 'unavailable'}`}
+                  className="stunt-card"
                 >
                   <button 
                     className="stunt-header"
