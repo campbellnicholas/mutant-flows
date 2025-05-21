@@ -1,14 +1,18 @@
 import { useState, useRef } from 'react';
 import DiceRoller from './DiceRoller';
 import { skills } from '../data/scenarios/skills';
+import { specialistSkills } from '../data/scenarios/specialistSkills';
 import type { Skill } from '../data/scenarios/skills';
 import './SkillRoller.css';
+
+type SkillCategory = 'basic' | 'specialist';
 
 /**
  * SkillRoller Component
  * Handles skill-based dice rolls and displays available stunts based on successes
  */
 const SkillRoller: React.FC = () => {
+  const [skillCategory, setSkillCategory] = useState<SkillCategory>('basic');
   const [selectedSkill, setSelectedSkill] = useState<Skill | null>(null);
   const [attributeDice, setAttributeDice] = useState(0);
   const [skillDice, setSkillDice] = useState(0);
@@ -19,11 +23,21 @@ const SkillRoller: React.FC = () => {
   const lastRollSuccesses = useRef(0);
 
   /**
+   * Handles the selection of skill category
+   * @param {SkillCategory} category - The selected skill category
+   */
+  const handleCategorySelect = (category: SkillCategory) => {
+    setSkillCategory(category);
+    setSelectedSkill(null); // Reset selected skill when changing categories
+  };
+
+  /**
    * Handles the selection of a skill
    * @param {string} skillId - The ID of the selected skill
    */
   const handleSkillSelect = (skillId: string) => {
-    const skill = skills.find(s => s.id === skillId);
+    const skillList = skillCategory === 'basic' ? skills : specialistSkills;
+    const skill = skillList.find(s => s.id === skillId);
     setSelectedSkill(skill || null);
   };
 
@@ -42,15 +56,38 @@ const SkillRoller: React.FC = () => {
 
   return (
     <div className="skill-roller">
+      <h3>Select Skill</h3>
       <div className="skill-selector">
-        <h3>Select Skill</h3>
+        <div className="skill-type-selector">
+          <label className="radio-label">
+            <input
+              type="radio"
+              name="skillType"
+              value="basic"
+              checked={skillCategory === 'basic'}
+              onChange={(e) => handleCategorySelect(e.target.value as SkillCategory)}
+            />
+            <span>Basic Skills</span>
+          </label>
+          <label className="radio-label">
+            <input
+              type="radio"
+              name="skillType"
+              value="specialist"
+              checked={skillCategory === 'specialist'}
+              onChange={(e) => handleCategorySelect(e.target.value as SkillCategory)}
+            />
+            <span>Specialist Skills</span>
+          </label>
+        </div>
+
         <select 
           value={selectedSkill?.id || ''} 
           onChange={(e) => handleSkillSelect(e.target.value)}
           className="skill-select"
         >
           <option value="">Choose a skill...</option>
-          {skills.map(skill => (
+          {(skillCategory === 'basic' ? skills : specialistSkills).map(skill => (
             <option key={skill.id} value={skill.id}>
               {skill.name} ({skill.attribute})
             </option>
@@ -146,7 +183,9 @@ const SkillRoller: React.FC = () => {
                     <span className={`toggle-icon ${isExpanded ? 'expanded' : ''}`}>▼</span>
                   </button>
                   <div className={`stunt-details ${isExpanded ? 'expanded' : ''}`}>
-                    <p>{stunt.description}</p>
+                    {stunt.description.split('\n').map((paragraph, index) => (
+                      <p key={index}>{paragraph}</p>
+                    ))}
                   </div>
                 </div>
               );

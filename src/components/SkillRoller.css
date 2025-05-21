@@ -10,15 +10,13 @@
 
 .skill-selector {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 0.5rem;
   width: 100%;
-}
-
-.skill-selector h3 {
-  margin: 0;
-  color: #333;
-  font-size: 1.25rem;
+  flex-basis: 50%;
+  flex-grow: 1;
+  align-items: center;
+  justify-content: center;
 }
 
 .skill-select {
@@ -31,6 +29,9 @@
   color: #333;
   cursor: pointer;
   transition: all 0.2s ease;
+  flex-basis: 50%;
+  flex-grow: 1;
+
 }
 
 .skill-select:focus {
@@ -325,4 +326,34 @@
 .show-stunts-button:hover {
   background-color: #535bf2;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.skill-type-selector {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.radio-label:hover {
+  background-color: var(--color-background-hover);
+}
+
+.radio-label input[type="radio"] {
+  margin: 0;
+  cursor: pointer;
+}
+
+.radio-label span {
+  font-size: 1rem;
+  color: var(--color-text-primary);
 } 
