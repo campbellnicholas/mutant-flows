@@ -52,7 +52,10 @@ const DiceRoller: React.FC<DiceRollerProps> = ({
   const [diceConfig, setDiceConfig] = useState<DiceConfig>(initialDice);
   const [diceResults, setDiceResults] = useState<DieResult[]>([]);
   const [isRolling, setIsRolling] = useState(false);
-  const [rollHistory, setRollHistory] = useState<Array<{ results: DieResult[]; description?: string }>>([]);
+  const [rollHistory, setRollHistory] = useState<Array<{ results: DieResult[]; description?: string }>>(() => {
+    const saved = sessionStorage.getItem('rollHistory');
+    return saved ? JSON.parse(saved) : [];
+  });
   const [currentSummary, setCurrentSummary] = useState<RollSummary>({ successes: 0, failures: 0, brokenGear: 0 });
   const [canPush, setCanPush] = useState(false);
   const [rollDescription, setRollDescription] = useState('');
@@ -69,6 +72,11 @@ const DiceRoller: React.FC<DiceRollerProps> = ({
       onRollSummary(currentSummary);
     }
   }, [currentSummary, onRollSummary]);
+
+  // Add useEffect for sessionStorage persistence
+  useEffect(() => {
+    sessionStorage.setItem('rollHistory', JSON.stringify(rollHistory));
+  }, [rollHistory]);
 
   /**
    * Generates a new die result
@@ -204,6 +212,12 @@ const DiceRoller: React.FC<DiceRollerProps> = ({
     }, 1000);
   }, [isRolling, diceResults, generateDieResult, calculateRollSummary, isDiePushable, lastRollDescription]);
 
+  // Add clearHistory function
+  const clearHistory = () => {
+    setRollHistory([]);
+    sessionStorage.removeItem('rollHistory');
+  };
+
   const renderValue = (val: number, color: 'green' | 'yellow' | 'black') => {
     switch (val) {
       case 1:
@@ -264,7 +278,7 @@ const DiceRoller: React.FC<DiceRollerProps> = ({
           type="text"
           value={rollDescription}
           onChange={(e) => setRollDescription(e.target.value)}
-          placeholder="What are you rolling for?"
+          placeholder="Optional: What is this roll for?"
           className="roll-description-input"
           disabled={isRolling}
         />
@@ -289,7 +303,18 @@ const DiceRoller: React.FC<DiceRollerProps> = ({
       </div>
 
       <div className="roll-history">
-        <h3>Roll History</h3>
+        <div className="history-header">
+          <h3>Roll History</h3>
+          {rollHistory.length > 0 && (
+            <button 
+              onClick={clearHistory}
+              className="clear-history-button"
+              title="Clear roll history"
+            >
+              Clear History
+            </button>
+          )}
+        </div>
         <div className="history-list">
           {rollHistory.length > 0 ? (
             rollHistory.map((roll, rollIndex) => (
