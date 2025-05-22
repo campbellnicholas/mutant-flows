@@ -1,11 +1,15 @@
 .skill-roller {
-  width: 100%;
+  width: calc(100% - 2rem);
   max-width: 100%;
   margin: 0 auto;
   padding: 1rem;
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  
 }
 
 .skill-selector {
@@ -17,6 +21,8 @@
   flex-grow: 1;
   align-items: center;
   justify-content: center;
+  max-width: 600px;
+  margin-bottom: 1rem;
 }
 
 .skill-select {
@@ -331,7 +337,6 @@
 .skill-type-selector {
   display: flex;
   gap: 1.5rem;
-  margin-bottom: 1rem;
 }
 
 .radio-label {
