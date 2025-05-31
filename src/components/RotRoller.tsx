@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import DiceRoller from './DiceRoller'
 import './DiceRoller.css'
 
@@ -17,6 +17,11 @@ type RollResult = {
   newSuitRating?: number
 }
 
+type ProtectionRoll = {
+  rotPointNumber: number
+  absorbed: boolean
+}
+
 /**
  * RotRoller component for handling rot-related dice rolls
  * @returns {JSX.Element} The RotRoller component
@@ -29,27 +34,64 @@ const RotRoller = () => {
     rotSuitRating: 3
   })
   const [result, setResult] = useState<RollResult | null>(null)
+  const [protectionRolls, setProtectionRolls] = useState<ProtectionRoll[]>([])
+  const [currentRotPoint, setCurrentRotPoint] = useState<number>(1)
+  const [completedRolls, setCompletedRolls] = useState<number>(0)
+  const damageRollRef = useRef<HTMLDivElement>(null)
 
-  /**
-   * Handles the completion of a protection roll
-   * @param {Object} summary - The roll summary
-   * @returns {void}
-   */
+  // Add effect to scroll to damage roll when protection rolls are complete
+  useEffect(() => {
+    if (completedRolls === rotPoints && damageRollRef.current) {
+      damageRollRef.current.scrollIntoView({ behavior: 'smooth' })
+    }
+  }, [completedRolls, rotPoints])
+
+  const handleReset = () => {
+    setProtectionRolls([])
+    setCurrentRotPoint(1)
+    setResult(null)
+    setCompletedRolls(0)
+    setProtection({
+      hasRotResistant: false,
+      hasRotSuit: false,
+      rotSuitRating: 3
+    })
+  }
+
   const handleProtectionRollComplete = (summary: { successes: number, failures: number, brokenGear: number }) => {
-    const absorbedPoints = summary.successes
-    const remainingPoints = Math.max(0, rotPoints - absorbedPoints)
+    const absorbed = summary.successes > 0
+    
+    // Calculate new state based on current values
+    const newRoll = {
+      rotPointNumber: currentRotPoint,
+      absorbed
+    }
+    
+    const newProtectionRolls = [...protectionRolls, newRoll]
+    const totalAbsorbed = newProtectionRolls.filter(roll => roll.absorbed).length
+    const remainingPoints = Math.max(0, rotPoints - totalAbsorbed)
     const protectionReduced = protection.hasRotSuit && summary.brokenGear > 0
     const newSuitRating = protection.hasRotSuit ? 
       Math.max(0, protection.rotSuitRating - summary.brokenGear) : 
       undefined
 
-    setResult({
-      absorbedPoints,
-      remainingPoints,
-      damage: 0, // Will be updated after damage roll
-      protectionReduced,
-      newSuitRating
-    })
+    // Update all state at once
+    setProtectionRolls(newProtectionRolls)
+    setCompletedRolls(prev => prev + 1)
+
+    // Only increment currentRotPoint if we haven't reached the total
+    if (currentRotPoint < rotPoints) {
+      setCurrentRotPoint(prev => prev + 1)
+    } else {
+      // All protection rolls are complete
+      setResult({
+        absorbedPoints: totalAbsorbed,
+        remainingPoints,
+        damage: 0, // Will be updated after damage roll
+        protectionReduced,
+        newSuitRating
+      })
+    }
   }
 
   /**
@@ -67,7 +109,16 @@ const RotRoller = () => {
 
   return (
     <div className="rot-roller">
-      <h2>Rot Roller</h2>
+      <div className="roller-header">
+        <h2>Rot Roller</h2>
+        <button 
+          className="reset-button"
+          onClick={handleReset}
+          title="Reset all rolls"
+        >
+          Reset Rolls
+        </button>
+      </div>
       
       <div className="input-section">
         <div className="input-group">
@@ -82,12 +133,14 @@ const RotRoller = () => {
               // Allow empty input
               if (value === '') {
                 setRotPoints(1);
+                handleReset();
                 return;
               }
               // Parse the number and ensure it's at least 1
               const numValue = parseInt(value);
               if (!isNaN(numValue)) {
                 setRotPoints(Math.max(1, numValue));
+                handleReset();
               }
             }}
           />
@@ -143,27 +196,62 @@ const RotRoller = () => {
 
       <div className="dice-rollers">
         {(protection.hasRotResistant || protection.hasRotSuit) && (
-          <DiceRoller
-            label="Rolling for Protection"
-            initialDice={{
-              green: protection.hasRotResistant ? 3 : 0,
-              yellow: 0,
-              black: protection.hasRotSuit ? protection.rotSuitRating : 0
-            }}
-            onRollSummary={handleProtectionRollComplete}
-          />
+          <div className="roll-step">
+            <div className="step-header">
+              <span className="step-number">1</span>
+              <h3>Roll for Protection</h3>
+            </div>
+            <p className="step-description">
+              Roll protection for Rot Point {currentRotPoint} of {rotPoints}. This includes {protection.hasRotResistant ? '3 green dice from Rot Resistant talent' : ''}
+              {protection.hasRotResistant && protection.hasRotSuit ? ' and ' : ''}
+              {protection.hasRotSuit ? `${protection.rotSuitRating} black dice from your Rot Suit` : ''}.
+            </p>
+            <div className="protection-progress">
+              Protection Rolls: {completedRolls} of {rotPoints}
+            </div>
+            <DiceRoller
+              label="Rolling for Protection"
+              initialDice={{
+                green: protection.hasRotResistant ? 3 : 0,
+                yellow: 0,
+                black: protection.hasRotSuit ? protection.rotSuitRating : 0
+              }}
+              onRollSummary={handleProtectionRollComplete}
+              showHistory={true}
+              storageKey="rotProtectionHistory"
+              allowPush={false}
+              disabled={completedRolls === rotPoints}
+            />
+          </div>
         )}
 
         {(!protection.hasRotResistant && !protection.hasRotSuit || (result?.remainingPoints ?? 0) > 0) && (
-          <DiceRoller
-            label="Rolling for Rot Damage"
-            initialDice={{ 
-              green: result?.remainingPoints ?? rotPoints, 
-              yellow: 0, 
-              black: 0 
-            }}
-            onRollSummary={handleDamageRollComplete}
-          />
+          <div className="roll-step" ref={damageRollRef}>
+            <div className="step-header">
+              <span className="step-number">
+                {(protection.hasRotResistant || protection.hasRotSuit) ? '2' : '1'}
+              </span>
+              <h3>Roll for Rot Damage</h3>
+            </div>
+            <p className="step-description">
+              {result?.remainingPoints ? 
+                `Roll ${result.remainingPoints} green dice for the remaining rot points.` :
+                `Roll ${rotPoints} green dice for your rot points.`
+              }
+            </p>
+            <DiceRoller
+              label="Rolling for Rot Damage"
+              initialDice={{ 
+                green: result?.remainingPoints ?? rotPoints, 
+                yellow: 0, 
+                black: 0 
+              }}
+              onRollSummary={handleDamageRollComplete}
+              showHistory={true}
+              storageKey="rotDamageHistory"
+              allowPush={false}
+            />
+          </div>
         )}
       </div>
 

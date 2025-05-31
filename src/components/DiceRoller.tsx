@@ -37,23 +37,35 @@ interface DiceConfig {
  * @param {string} props.label - Label for this group of dice
  * @param {Object} props.initialDice - Initial dice configuration
  * @param {Function} props.onRollSummary - Callback when roll summary changes
+ * @param {boolean} props.showHistory - Whether to show the roll history
+ * @param {string} props.storageKey - Unique key for sessionStorage
+ * @param {boolean} props.allowPush - Whether to allow pushing the roll
+ * @param {boolean} props.disabled - Whether the dice roller is disabled
  */
 interface DiceRollerProps {
   label?: string;
   initialDice?: DiceConfig;
   onRollSummary?: (summary: RollSummary) => void;
+  showHistory?: boolean;
+  storageKey?: string;
+  allowPush?: boolean;
+  disabled?: boolean;
 }
 
 const DiceRoller: React.FC<DiceRollerProps> = ({ 
   label, 
   initialDice = { green: 0, yellow: 0, black: 0 },
-  onRollSummary 
+  onRollSummary,
+  showHistory = true,
+  storageKey = 'defaultRollHistory',
+  allowPush = true,
+  disabled = false
 }) => {
   const [diceConfig, setDiceConfig] = useState<DiceConfig>(initialDice);
   const [diceResults, setDiceResults] = useState<DieResult[]>([]);
   const [isRolling, setIsRolling] = useState(false);
   const [rollHistory, setRollHistory] = useState<Array<{ results: DieResult[]; description?: string }>>(() => {
-    const saved = sessionStorage.getItem('rollHistory');
+    const saved = sessionStorage.getItem(storageKey);
     return saved ? JSON.parse(saved) : [];
   });
   const [currentSummary, setCurrentSummary] = useState<RollSummary>({ successes: 0, failures: 0, brokenGear: 0 });
@@ -66,17 +78,10 @@ const DiceRoller: React.FC<DiceRollerProps> = ({
     setDiceConfig(initialDice);
   }, [initialDice]);
 
-  // Notify parent component of roll summary changes
-  useEffect(() => {
-    if (onRollSummary) {
-      onRollSummary(currentSummary);
-    }
-  }, [currentSummary, onRollSummary]);
-
   // Add useEffect for sessionStorage persistence
   useEffect(() => {
-    sessionStorage.setItem('rollHistory', JSON.stringify(rollHistory));
-  }, [rollHistory]);
+    sessionStorage.setItem(storageKey, JSON.stringify(rollHistory));
+  }, [rollHistory, storageKey]);
 
   /**
    * Generates a new die result
@@ -166,13 +171,17 @@ const DiceRoller: React.FC<DiceRollerProps> = ({
         results: finalResults,
         description
       }, ...prev].slice(0, 10));
-      setCurrentSummary(calculateRollSummary(finalResults));
+      const newSummary = calculateRollSummary(finalResults);
+      setCurrentSummary(newSummary);
+      if (onRollSummary) {
+        onRollSummary(newSummary);
+      }
       setCanPush(finalResults.some(isDiePushable));
       setIsRolling(false);
       setRollDescription(''); // Clear the description after roll
       setLastRollDescription(description); // Store the description for potential push
     }, 1000);
-  }, [isRolling, diceConfig, generateDieResult, calculateRollSummary, isDiePushable, rollDescription, rollHistory.length]);
+  }, [isRolling, diceConfig, generateDieResult, calculateRollSummary, isDiePushable, rollDescription, rollHistory.length, onRollSummary]);
 
   /**
    * Handles pushing the roll
@@ -205,17 +214,21 @@ const DiceRoller: React.FC<DiceRollerProps> = ({
         results: finalResults,
         description: lastRollDescription ? `${lastRollDescription} (Push)` : `Roll ${prev.length + 1} (Push)`
       }, ...prev].slice(0, 10));
-      setCurrentSummary(calculateRollSummary(finalResults));
+      const newSummary = calculateRollSummary(finalResults);
+      setCurrentSummary(newSummary);
+      if (onRollSummary) {
+        onRollSummary(newSummary);
+      }
       setCanPush(false); // Can't push again
       setIsRolling(false);
       setRollDescription(''); // Clear the description after push
     }, 1000);
-  }, [isRolling, diceResults, generateDieResult, calculateRollSummary, isDiePushable, lastRollDescription]);
+  }, [isRolling, diceResults, generateDieResult, calculateRollSummary, isDiePushable, lastRollDescription, onRollSummary]);
 
   // Add clearHistory function
   const clearHistory = () => {
     setRollHistory([]);
-    sessionStorage.removeItem('rollHistory');
+    sessionStorage.removeItem(storageKey);
   };
 
   const renderValue = (val: number, color: 'green' | 'yellow' | 'black') => {
@@ -286,12 +299,12 @@ const DiceRoller: React.FC<DiceRollerProps> = ({
           <button 
             className="roll-button"
             onClick={handleRoll}
-            disabled={isRolling || totalDice === 0}
+            disabled={isRolling || totalDice === 0 || disabled}
           >
             {isRolling ? 'Rolling...' : `Roll ${totalDice} Dice`}
           </button>
 
-          {canPush && !isRolling && (
+          {canPush && !isRolling && allowPush && (
             <button 
               className="push-button"
               onClick={handlePush}
@@ -302,48 +315,50 @@ const DiceRoller: React.FC<DiceRollerProps> = ({
         </div>
       </div>
 
-      <div className="roll-history">
-        <div className="history-header">
-          <h3>Roll History</h3>
-          {rollHistory.length > 0 && (
-            <button 
-              onClick={clearHistory}
-              className="clear-history-button"
-              title="Clear roll history"
-            >
-              Clear History
-            </button>
-          )}
-        </div>
-        <div className="history-list">
-          {rollHistory.length > 0 ? (
-            rollHistory.map((roll, rollIndex) => (
-              <div 
-                key={rollIndex} 
-                className={`history-item ${roll.results.some(die => die.pushed) ? 'pushed' : ''}`}
+      {showHistory && (
+        <div className="roll-history">
+          <div className="history-header">
+            <h3>Roll History</h3>
+            {rollHistory.length > 0 && (
+              <button 
+                onClick={clearHistory}
+                className="clear-history-button"
+                title="Clear roll history"
               >
-                <div className="history-dice">
-                  {roll.description}:{' '}
-                  {roll.results.map(die => (
-                    <span key={die.id} className={`die-value die-value-${die.color} ${die.pushed ? 'pushed' : ''}`}>
-                      {renderValue(die.value, die.color)}
-                    </span>
-                  ))}
+                Clear History
+              </button>
+            )}
+          </div>
+          <div className="history-list">
+            {rollHistory.length > 0 ? (
+              rollHistory.map((roll, rollIndex) => (
+                <div 
+                  key={rollIndex} 
+                  className={`history-item ${roll.results.some(die => die.pushed) ? 'pushed' : ''}`}
+                >
+                  <div className="history-dice">
+                    {roll.description}:{' '}
+                    {roll.results.map(die => (
+                      <span key={die.id} className={`die-value die-value-${die.color} ${die.pushed ? 'pushed' : ''}`}>
+                        {renderValue(die.value, die.color)}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="history-summary">
+                    <span className="summary-badge success">Successes: {calculateRollSummary(roll.results).successes}</span>
+                    <span className="summary-badge failure">Failures: {calculateRollSummary(roll.results).failures}</span>
+                    {roll.results.some(die => die.color === 'black') && (
+                      <span className="summary-badge broken">Broken: {calculateRollSummary(roll.results).brokenGear}</span>
+                    )}
+                  </div>
                 </div>
-                <div className="history-summary">
-                  <span className="summary-badge success">Successes: {calculateRollSummary(roll.results).successes}</span>
-                  <span className="summary-badge failure">Failures: {calculateRollSummary(roll.results).failures}</span>
-                  {roll.results.some(die => die.color === 'black') && (
-                    <span className="summary-badge broken">Broken: {calculateRollSummary(roll.results).brokenGear}</span>
-                  )}
-                </div>
-              </div>
-            ))
-          ) : (
-            <div className="no-rolls">No rolls yet</div>
-          )}
+              ))
+            ) : (
+              <div className="no-rolls">No rolls yet</div>
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
