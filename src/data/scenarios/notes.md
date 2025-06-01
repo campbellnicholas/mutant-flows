@@ -22,11 +22,24 @@ Location: Page 11
 
 ## Combat Rolls
 
-## Mutataion Rolls
+## Mutation Rolls
 
 ## Rot Rolls
 
-(from pages 124-125 in teh Mutant: Year Zero Core Rulebook)
+### ORDER OF OPERATIONS FOR ROLLING AGAINST ROT
+1. Determine how many points of rot you have total after incurring more Rot Points.
+2. Do you have the Rot Resistant talent? If yes, you have 3 modification Skill dice. If no, you do not gain additional dice to roll.
+3. Do you have Rot Armor? If yes, what is the Armor Rating? That Armor Rating is the number of modification Gear dice you have. If you do not have Rot Armor, you do not gain additional dice to roll.
+4. It's important to note that the Rot Resistant talent dice and the Rot Armor dice stack (if you have the Rot Resistant talent with a 3 armor rating and Rot Armor with an armor rating of 2, you will roll 3 skill dice and 2 gear dice).
+5. For every point of rot you have incurred in total, you will roll your the skill dice and gear dice. For example, if you have have incurred 3 rot points, you will roll the dice you got for any armor or resistance 3 times. If you roll a 6 on the dice, you absorb that rot point (meaning you no longer have incurred that Rot). 
+6. If you roll a 1 on the Gear dice, the Rot Suit is damaged and the armor rating decreases by 1. On subsequent protection rolls, your Gear dice should be reduced by the armor rating decrease (for example, if you had 3 rot points with a rot armor rating of 2 and on the first roll you roll a 1, the very next roll you should only roll one Gear die).
+7.  If there are any rot points left after a player rolls their armor rating, then, for each rot point, the player rolls 1 die (if the player has 3 rot points remaining after rolling their armor OR if they didn't have armor, the player will roll 3 dice). These are Skill dice. If the player rolls one or more 1 on the dice, they will incur damage for the number of dice that rolled a 1.
+
+### LOCATIONS OF INFORMATION REGARDING ROT
+- Mutant: Year Zero Core Rulebook
+    - Rot Level, Rot Attack, Effects of Rot, Rot Suits, Decontamination, Permanent Rot Points: pages 124-126
+- Mutant: Year Zero: Elysium 
+    - Rot Resistant talent: page 57
 
 ### ROT LEVEL
 The worst thing about the Rot is that it permeates your body and builds up inside you over time. When you are contaminated by the Rot, you suffer Rot Points. Mark them in the check boxes on your character sheet.
@@ -74,12 +87,3 @@ The next day, Krin returns to the Ark to be decontaminated, which would eliminat
 ### ADDITIONAL MECHANICS TO KNOW
 - Trauma means a decrease to an attribute capacity. For example, a player may have 4 in a Strength attribute (which represents 4 dice on Strength-based rolls). If that player experiences trauma to their Strength attribute (known as "damage") of 1 point, the player will then only have access to 3 dice for their next Strength-based roll until they heal that attribute (4 hours of rest + 1 ration of grub). You can also experience Trauma to the Agility attribute ("fatigue"), Wits attribute ("confusion"), and Empathy attribute ("doubt"). Fatigue can be recovered through 4 hours of rest + 1 ration of water. Confusion can recovered through 8 hours of sleep. Empathy can be recovered through 4 hours of rest + a heart-to-heart conversation with another player.
 - Armor and Shields: The effect of armor is determined by the Armor Rating. You can only wear one type of armor at a time. When you suffer damage, roll a number of Gear Dice equal to the Armor Rating. For every 6 you roll on the dice, the damage you suffer is reduced by one. Unless all damage is absorbed, for every 1 you roll on the Gear dice, the Armor Rating is decreased by one (except natural armor). The armor roll does not count as an action and cannot be pushed. Armor can be repaired by Gearheads (page 55).
-
-### ORDER OF OPERATIONS FOR ROLLING AGAINST ROT
-1. Determine how many points of rot you have total after incurring more Rot Points.
-2. Do you have the Rot Resistant talent? If yes, you have 3 modification Skill dice. If no, you do not gain additional dice to roll.
-3. Do you have Rot Armor? If yes, what is the Armor Rating? That Armor Rating is the number of modification Gear dice you have. If you do not have Rot Armor, you do not gain additional dice to roll.
-4. It's important to note that the Rot Resistant talent dice and the Rot Armor dice stack (if you have the Rot Resistant talent with a 3 armor rating and Rot Armor with an armor rating of 2, you will roll 3 skill dice and 2 gear dice).
-5. For every point of rot you have incurred in total, you will roll your the skill dice and gear dice. For example, if you have have incurred 3 rot points, you will roll the dice you got for any armor or resistance 3 times. If you roll a 6 on the dice, you absorb that rot point (meaning you no longer have incurred that Rot). 
-6. If you roll a 1 on the Gear dice, the Rot Suit is damaged and the armor rating decreases by 1. On subsequent protection rolls, your Gear dice should be reduced by the armor rating decrease (for example, if you had 3 rot points with a rot armor rating of 2 and on the first roll you roll a 1, the very next roll you should only roll one Gear die).
-7.  If there are any rot points left after a player rolls their armor rating, then, for each rot point, the player rolls 1 die (if the player has 3 rot points remaining after rolling their armor OR if they didn't have armor, the player will roll 3 dice). These are Skill dice. If the player rolls one or more 1 on the dice, they will incur damage for the number of dice that rolled a 1.
