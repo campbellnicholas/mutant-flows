@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import DiceRoller from './DiceRoller'
 import './DiceRoller.css'
+import './RotRoller.css'
 
 // Types for the rot roller
 type ProtectionType = {
@@ -20,6 +21,7 @@ type RollResult = {
 type ProtectionRoll = {
   rotPointNumber: number
   absorbed: boolean
+  brokenGear?: number
 }
 
 /**
@@ -37,7 +39,9 @@ const RotRoller = () => {
   const [protectionRolls, setProtectionRolls] = useState<ProtectionRoll[]>([])
   const [currentRotPoint, setCurrentRotPoint] = useState<number>(1)
   const [completedRolls, setCompletedRolls] = useState<number>(0)
+  const [damageRollCompleted, setDamageRollCompleted] = useState<boolean>(false)
   const damageRollRef = useRef<HTMLDivElement>(null)
+  const resultsRef = useRef<HTMLDivElement>(null)
 
   // Add effect to scroll to damage roll when protection rolls are complete
   useEffect(() => {
@@ -46,16 +50,32 @@ const RotRoller = () => {
     }
   }, [completedRolls, rotPoints])
 
+  // Add effect to scroll to results when damage roll is complete
+  useEffect(() => {
+    if (damageRollCompleted && resultsRef.current) {
+      resultsRef.current.scrollIntoView({ behavior: 'smooth' })
+    }
+  }, [damageRollCompleted])
+
   const handleReset = () => {
     setProtectionRolls([])
     setCurrentRotPoint(1)
     setResult(null)
     setCompletedRolls(0)
+    setDamageRollCompleted(false)
     setProtection({
       hasRotResistant: false,
       hasRotSuit: false,
       rotSuitRating: 3
     })
+  }
+
+  const handleResetRolls = () => {
+    setProtectionRolls([])
+    setCurrentRotPoint(1)
+    setResult(null)
+    setCompletedRolls(0)
+    setDamageRollCompleted(false)
   }
 
   const handleProtectionRollComplete = (summary: { successes: number, failures: number, brokenGear: number }) => {
@@ -64,16 +84,30 @@ const RotRoller = () => {
     // Calculate new state based on current values
     const newRoll = {
       rotPointNumber: currentRotPoint,
-      absorbed
+      absorbed,
+      brokenGear: summary.brokenGear
     }
     
     const newProtectionRolls = [...protectionRolls, newRoll]
     const totalAbsorbed = newProtectionRolls.filter(roll => roll.absorbed).length
     const remainingPoints = Math.max(0, rotPoints - totalAbsorbed)
+    
+    // Track cumulative armor reduction
     const protectionReduced = protection.hasRotSuit && summary.brokenGear > 0
+    const totalBrokenGear = newProtectionRolls.reduce((total, roll) => total + (roll.brokenGear ?? 0), 0)
     const newSuitRating = protection.hasRotSuit ? 
-      Math.max(0, protection.rotSuitRating - summary.brokenGear) : 
+      Math.max(0, protection.rotSuitRating - totalBrokenGear) : 
       undefined
+
+    // Update protection state immediately if armor rating is reduced
+    if (protectionReduced && newSuitRating !== undefined) {
+      setProtection(prev => {
+        return {
+          ...prev,
+          rotSuitRating: newSuitRating
+        }
+      })
+    }
 
     // Update all state at once
     setProtectionRolls(newProtectionRolls)
@@ -84,13 +118,14 @@ const RotRoller = () => {
       setCurrentRotPoint(prev => prev + 1)
     } else {
       // All protection rolls are complete
-      setResult({
+      const finalResult = {
         absorbedPoints: totalAbsorbed,
         remainingPoints,
         damage: 0, // Will be updated after damage roll
         protectionReduced,
         newSuitRating
-      })
+      }
+      setResult(finalResult)
     }
   }
 
@@ -105,6 +140,7 @@ const RotRoller = () => {
       ...prev,
       damage
     } : null)
+    setDamageRollCompleted(true)
   }
 
   return (
@@ -133,14 +169,14 @@ const RotRoller = () => {
               // Allow empty input
               if (value === '') {
                 setRotPoints(1);
-                handleReset();
+                handleResetRolls();
                 return;
               }
               // Parse the number and ensure it's at least 1
               const numValue = parseInt(value);
               if (!isNaN(numValue)) {
                 setRotPoints(Math.max(1, numValue));
-                handleReset();
+                handleResetRolls();
               }
             }}
           />
@@ -225,7 +261,7 @@ const RotRoller = () => {
           </div>
         )}
 
-        {(!protection.hasRotResistant && !protection.hasRotSuit || (result?.remainingPoints ?? 0) > 0) && (
+        {(!protection.hasRotResistant && !protection.hasRotSuit || completedRolls === rotPoints) && (
           <div className="roll-step" ref={damageRollRef}>
             <div className="step-header">
               <span className="step-number">
@@ -233,12 +269,18 @@ const RotRoller = () => {
               </span>
               <h3>Roll for Rot Damage</h3>
             </div>
-            <p className="step-description">
-              {result?.remainingPoints ? 
-                `Roll ${result.remainingPoints} green dice for the remaining rot points.` :
-                `Roll ${rotPoints} green dice for your rot points.`
-              }
-            </p>
+            {result?.remainingPoints === 0 ? (
+              <p className="step-description success-message">
+                Rot has been absorbed by your rot protection!
+              </p>
+            ) : (
+              <p className="step-description">
+                {result?.remainingPoints ? 
+                  `Roll ${result.remainingPoints} green dice for the remaining rot points.` :
+                  `Roll ${rotPoints} green dice for your rot points.`
+                }
+              </p>
+            )}
             <DiceRoller
               label="Rolling for Rot Damage"
               initialDice={{ 
@@ -250,13 +292,14 @@ const RotRoller = () => {
               showHistory={true}
               storageKey="rotDamageHistory"
               allowPush={false}
+              disabled={damageRollCompleted || result?.remainingPoints === 0}
             />
           </div>
         )}
       </div>
 
       {result && (
-        <div className="result-section">
+        <div className="result-section" ref={resultsRef}>
           <h3>Results</h3>
           {(protection.hasRotResistant || protection.hasRotSuit) && (
             <>
