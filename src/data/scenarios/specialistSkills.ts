@@ -218,7 +218,7 @@ export const specialistSkills: Skill[] = [
         id: 'boss-command',
         name: 'Boss: Command',
         attribute: 'wits',
-        description: 'You can hack into a computer system and find out what you need to know.',
+        description: 'Use your clout to make it happen.',
         success: 'If the Command roll succeeds, your gang (or the individual members given the order) performs the task you want. If any of the factors in the table change during the task, you\'ll need to roll again.',
         failure: 'If your Command roll fails, someone in your gang rebels against you! You\'ll need to fight him one-on-one, to make an example of what happens to anyone who questions your leadership. If you lose this fight (and live), your gang abandons you. You can find a new gang, but it will take some weeks and a successful Command roll. This process should be at least partly roleplayed out.',
         stunts: [
