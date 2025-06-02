@@ -41,6 +41,7 @@ interface DiceConfig {
  * @param {string} props.storageKey - Unique key for sessionStorage
  * @param {boolean} props.allowPush - Whether to allow pushing the roll
  * @param {boolean} props.disabled - Whether the dice roller is disabled
+ * @param {boolean} props.countGreenFailures - Whether to count 1s on green dice as failures
  */
 interface DiceRollerProps {
   label?: string;
@@ -50,6 +51,7 @@ interface DiceRollerProps {
   storageKey?: string;
   allowPush?: boolean;
   disabled?: boolean;
+  countGreenFailures?: boolean;
 }
 
 const DiceRoller: React.FC<DiceRollerProps> = ({ 
@@ -59,7 +61,8 @@ const DiceRoller: React.FC<DiceRollerProps> = ({
   showHistory = true,
   storageKey = 'defaultRollHistory',
   allowPush = true,
-  disabled = false
+  disabled = false,
+  countGreenFailures = false
 }) => {
   const [diceConfig, setDiceConfig] = useState<DiceConfig>(initialDice);
   const [diceResults, setDiceResults] = useState<DieResult[]>([]);
@@ -125,7 +128,7 @@ const DiceRoller: React.FC<DiceRollerProps> = ({
       if (die.value === 6) {
         summary.successes++;
       }
-      if ((die.color === 'yellow' || die.color === 'black') && die.value === 1) {
+      if (die.value === 1 && (countGreenFailures || die.color !== 'green')) {
         summary.failures++;
       }
       if (die.color === 'black' && die.value === 1) {
@@ -133,7 +136,7 @@ const DiceRoller: React.FC<DiceRollerProps> = ({
       }
       return summary;
     }, { successes: 0, failures: 0, brokenGear: 0 });
-  }, []);
+  }, [countGreenFailures]);
 
   /**
    * Handles the dice roll action

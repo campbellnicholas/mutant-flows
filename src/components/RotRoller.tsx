@@ -113,11 +113,14 @@ const RotRoller = () => {
     setProtectionRolls(newProtectionRolls)
     setCompletedRolls(prev => prev + 1)
 
-    // Only increment currentRotPoint if we haven't reached the total
-    if (currentRotPoint < rotPoints) {
+    // Check if we should move on to damage rolls
+    const hasProtection = (protection.hasRotResistant || (protection.hasRotSuit && newSuitRating && newSuitRating > 0))
+
+    // Only increment currentRotPoint if we haven't reached the total and still have protection
+    if (currentRotPoint < rotPoints && hasProtection) {
       setCurrentRotPoint(prev => prev + 1)
     } else {
-      // All protection rolls are complete
+      // All protection rolls are complete or protection is gone
       const finalResult = {
         absorbedPoints: totalAbsorbed,
         remainingPoints,
@@ -293,6 +296,7 @@ const RotRoller = () => {
               storageKey="rotDamageHistory"
               allowPush={false}
               disabled={damageRollCompleted || result?.remainingPoints === 0}
+              countGreenFailures={true}
             />
           </div>
         )}
