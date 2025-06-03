@@ -107,7 +107,22 @@ const SkillRoller: React.FC = () => {
                 className="dice-input-field-attribute"
                 min="0"
                 value={attributeDice}
-                onChange={(e) => setAttributeDice(Math.max(0, parseInt(e.target.value) || 0))}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value === '') {
+                    setAttributeDice(0);
+                  } else {
+                    const numValue = parseInt(value);
+                    if (!isNaN(numValue)) {
+                      setAttributeDice(Math.max(0, numValue));
+                    }
+                  }
+                }}
+                onBlur={(e) => {
+                  if (e.target.value === '') {
+                    setAttributeDice(0);
+                  }
+                }}
               />
             </div>
             <div className="dice-input">
@@ -117,7 +132,22 @@ const SkillRoller: React.FC = () => {
                 className="dice-input-field-skill"
                 min="0"
                 value={skillDice}
-                onChange={(e) => setSkillDice(Math.max(0, parseInt(e.target.value) || 0))}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value === '') {
+                    setSkillDice(0);
+                  } else {
+                    const numValue = parseInt(value);
+                    if (!isNaN(numValue)) {
+                      setSkillDice(Math.max(0, numValue));
+                    }
+                  }
+                }}
+                onBlur={(e) => {
+                  if (e.target.value === '') {
+                    setSkillDice(0);
+                  }
+                }}
               />
             </div>
             <div className="dice-input">
@@ -127,7 +157,22 @@ const SkillRoller: React.FC = () => {
                 className="dice-input-field-gear"
                 min="0"
                 value={gearDice}
-                onChange={(e) => setGearDice(Math.max(0, parseInt(e.target.value) || 0))}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value === '') {
+                    setGearDice(0);
+                  } else {
+                    const numValue = parseInt(value);
+                    if (!isNaN(numValue)) {
+                      setGearDice(Math.max(0, numValue));
+                    }
+                  }
+                }}
+                onBlur={(e) => {
+                  if (e.target.value === '') {
+                    setGearDice(0);
+                  }
+                }}
               />
             </div>
           </div>
