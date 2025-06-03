@@ -30,6 +30,7 @@ type ProtectionRoll = {
  */
 const RotRoller = () => {
   const [rotPoints, setRotPoints] = useState<number>(1)
+  const [rotPointsInput, setRotPointsInput] = useState<string>('1')
   const [protection, setProtection] = useState<ProtectionType>({
     hasRotResistant: false,
     hasRotSuit: false,
@@ -166,19 +167,22 @@ const RotRoller = () => {
             type="number"
             id="rotPoints"
             min="1"
-            value={rotPoints}
+            value={rotPointsInput}
             onChange={(e) => {
               const value = e.target.value;
-              // Allow empty input
+              setRotPointsInput(value);
               if (value === '') {
-                setRotPoints(1);
-                handleResetRolls();
                 return;
               }
-              // Parse the number and ensure it's at least 1
               const numValue = parseInt(value);
               if (!isNaN(numValue)) {
                 setRotPoints(Math.max(1, numValue));
+              }
+            }}
+            onBlur={(e) => {
+              if (e.target.value === '') {
+                setRotPointsInput('1');
+                setRotPoints(1);
                 handleResetRolls();
               }
             }}
@@ -223,10 +227,31 @@ const RotRoller = () => {
                 min="1"
                 max="6"
                 value={protection.rotSuitRating}
-                onChange={(e) => setProtection(prev => ({
-                  ...prev,
-                  rotSuitRating: Math.max(1, Math.min(6, parseInt(e.target.value) || 3))
-                }))}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value === '') {
+                    setProtection(prev => ({
+                      ...prev,
+                      rotSuitRating: 3
+                    }));
+                  } else {
+                    const numValue = parseInt(value);
+                    if (!isNaN(numValue)) {
+                      setProtection(prev => ({
+                        ...prev,
+                        rotSuitRating: Math.max(1, Math.min(6, numValue))
+                      }));
+                    }
+                  }
+                }}
+                onBlur={(e) => {
+                  if (e.target.value === '') {
+                    setProtection(prev => ({
+                      ...prev,
+                      rotSuitRating: 3
+                    }));
+                  }
+                }}
               />
             </div>
           )}
