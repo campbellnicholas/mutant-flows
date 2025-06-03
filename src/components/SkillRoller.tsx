@@ -15,8 +15,11 @@ const SkillRoller: React.FC = () => {
   const [skillCategory, setSkillCategory] = useState<SkillCategory>('basic');
   const [selectedSkill, setSelectedSkill] = useState<Skill | null>(null);
   const [attributeDice, setAttributeDice] = useState(0);
+  const [attributeDiceInput, setAttributeDiceInput] = useState('0');
   const [skillDice, setSkillDice] = useState(0);
+  const [skillDiceInput, setSkillDiceInput] = useState('0');
   const [gearDice, setGearDice] = useState(0);
+  const [gearDiceInput, setGearDiceInput] = useState('0');
   const [currentSuccesses, setCurrentSuccesses] = useState(0);
   const [expandedStuntId, setExpandedStuntId] = useState<string | null>(null);
   const [showStuntsModal, setShowStuntsModal] = useState(false);
@@ -106,20 +109,21 @@ const SkillRoller: React.FC = () => {
                 type="number"
                 className="dice-input-field-attribute"
                 min="0"
-                value={attributeDice}
+                value={attributeDiceInput}
                 onChange={(e) => {
                   const value = e.target.value;
+                  setAttributeDiceInput(value);
                   if (value === '') {
-                    setAttributeDice(0);
-                  } else {
-                    const numValue = parseInt(value);
-                    if (!isNaN(numValue)) {
-                      setAttributeDice(Math.max(0, numValue));
-                    }
+                    return;
+                  }
+                  const numValue = parseInt(value);
+                  if (!isNaN(numValue)) {
+                    setAttributeDice(Math.max(0, numValue));
                   }
                 }}
                 onBlur={(e) => {
                   if (e.target.value === '') {
+                    setAttributeDiceInput('0');
                     setAttributeDice(0);
                   }
                 }}
@@ -131,20 +135,21 @@ const SkillRoller: React.FC = () => {
                 type="number"
                 className="dice-input-field-skill"
                 min="0"
-                value={skillDice}
+                value={skillDiceInput}
                 onChange={(e) => {
                   const value = e.target.value;
+                  setSkillDiceInput(value);
                   if (value === '') {
-                    setSkillDice(0);
-                  } else {
-                    const numValue = parseInt(value);
-                    if (!isNaN(numValue)) {
-                      setSkillDice(Math.max(0, numValue));
-                    }
+                    return;
+                  }
+                  const numValue = parseInt(value);
+                  if (!isNaN(numValue)) {
+                    setSkillDice(Math.max(0, numValue));
                   }
                 }}
                 onBlur={(e) => {
                   if (e.target.value === '') {
+                    setSkillDiceInput('0');
                     setSkillDice(0);
                   }
                 }}
@@ -156,20 +161,21 @@ const SkillRoller: React.FC = () => {
                 type="number"
                 className="dice-input-field-gear"
                 min="0"
-                value={gearDice}
+                value={gearDiceInput}
                 onChange={(e) => {
                   const value = e.target.value;
+                  setGearDiceInput(value);
                   if (value === '') {
-                    setGearDice(0);
-                  } else {
-                    const numValue = parseInt(value);
-                    if (!isNaN(numValue)) {
-                      setGearDice(Math.max(0, numValue));
-                    }
+                    return;
+                  }
+                  const numValue = parseInt(value);
+                  if (!isNaN(numValue)) {
+                    setGearDice(Math.max(0, numValue));
                   }
                 }}
                 onBlur={(e) => {
                   if (e.target.value === '') {
+                    setGearDiceInput('0');
                     setGearDice(0);
                   }
                 }}
