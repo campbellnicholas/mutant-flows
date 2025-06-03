@@ -179,7 +179,7 @@
 
 @media (max-width: 768px) {
   .stunts-modal {
-    width: 100%;
+    width: calc(100% - 3rem); /* left and right padding: 1.5rem each */
     border-radius: 16px 16px 0 0;
   }
 }
