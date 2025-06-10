@@ -27,6 +27,22 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+:root[data-theme="dark"] {
+  --color-text-primary: rgba(255, 255, 255, 0.87);
+  --color-text-secondary: #213547;
+  --color-text-light: rgba(255, 255, 255, 0.87);
+  --color-link: #8faaff;
+  --color-link-hover: #b3c6ff;
+  --color-link-hover-light: #aabfff;
+  --color-bg-primary: #181a1b;
+  --color-bg-secondary: #23272a;
+  --color-bg-button: #23272a;
+  --color-bg-button-light: #2c2f34;
+  --color-bg-button-warning: #c62828;
+  --color-bg-input: #23272a;
+  --color-border-focus: #8faaff;
+}
+
 a {
   font-weight: 500;
   color: var(--color-link);

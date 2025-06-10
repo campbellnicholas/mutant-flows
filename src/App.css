@@ -371,3 +371,25 @@
   top: 50%;
   transform: translate(-50%, -50%);
 }
+
+.theme-toggle {
+  position: absolute;
+  top: 1.5rem;
+  right: 2rem;
+  background: transparent;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  z-index: 100;
+  color: var(--color-text-primary);
+  transition: color 0.2s, background 0.2s;
+  padding: 0.25em 0.5em;
+  border-radius: 50%;
+}
+.theme-toggle:focus {
+  outline: 2px solid var(--color-link);
+  background: rgba(100, 108, 255, 0.1);
+}
+.theme-toggle:hover {
+  background: rgba(100, 108, 255, 0.08);
+}
