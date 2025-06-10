@@ -337,8 +337,8 @@ const RotRoller = () => {
             </>
           )}
           <p>Damage Taken: {result.damage}</p>
-          {result.protectionReduced && result.newSuitRating !== undefined && (
-            <p>New Rot Suit Rating: {result.newSuitRating}</p>
+          {protection.hasRotSuit && (
+            <p>Current Rot Suit Rating: {protection.rotSuitRating}</p>
           )}
         </div>
       )}
