@@ -144,11 +144,14 @@
   height: 1.2rem;
   border: 1.5px solid var(--color-text-primary);
   border-radius: 4px;
+  background-color: transparent;
   cursor: pointer;
   position: relative;
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
-  display: inline-block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   vertical-align: middle;
 }
 
@@ -169,9 +172,9 @@
   border: solid var(--color-text-primary);
   border-width: 0 0.2rem 0.2rem 0;
   position: absolute;
-  left: 25%;
-  top: 0;
-  transform: rotate(45deg);
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) rotate(45deg);
 }
 
 .roll-button {
@@ -319,4 +322,52 @@
 
 .reset-button:hover {
   opacity: 1;
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  position: relative;
+}
+
+.radio-label input[type="radio"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 1.2rem;
+  height: 1.2rem;
+  border: 1.5px solid var(--color-text-primary);
+  border-radius: 50%;
+  background-color: transparent;
+  cursor: pointer;
+  position: relative;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+}
+
+.radio-label input[type="radio"]:focus {
+  border-color: var(--color-link);
+  box-shadow: 0 0 0 2px rgba(100, 108, 255, 0.2);
+}
+
+.radio-label input[type="radio"]:checked {
+  border-color: var(--color-text-primary);
+}
+
+.radio-label input[type="radio"]:checked::after {
+  content: '';
+  display: block;
+  width: 80%;
+  height: 80%;
+  background: var(--color-text-primary);
+  border-radius: 50%;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
 }
