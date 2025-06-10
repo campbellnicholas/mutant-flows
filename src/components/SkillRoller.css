@@ -260,7 +260,7 @@
 
 .toggle-icon {
   font-size: 0.8rem;
-  color: var(--color-text-secondary);
+  color: var(--color-text-primary);
   transition: transform 0.3s ease;
 }
 
@@ -282,7 +282,7 @@
 
 .stunt-details p {
   margin: 0;
-  color: var(--color-text-secondary);
+  color: var(--color-text-primary);
   line-height: 1.5;
 }
 

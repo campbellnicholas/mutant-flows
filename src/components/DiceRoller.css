@@ -137,7 +137,7 @@
 
 .roll-description-input:disabled {
   background: var(--color-bg-primary);
-  color: var(--color-text-secondary);
+  color: var(--color-text-primary);
   cursor: not-allowed;
 }
 
@@ -339,7 +339,7 @@
 .clear-history-button {
   padding: 0.5rem 1rem;
   background-color: var(--color-bg-button-warning);
-  color: var(--color-text-secondary);
+  color: var(--color-text-light);
   border: 1px solid var(--color-text-primary);
   border-radius: 4px;
   cursor: pointer;
