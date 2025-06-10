@@ -5,9 +5,12 @@
   line-height: 1.5;
 }
 
-.success-message {
-  color: #48bb78;
-  font-weight: 500;
+.success-message, .step-description.success-message {
+  color: #4CAF50;  /*var(--color-text-success);*/
+  font-weight: 600;
+  border: 1px dotted #4CAF50;
+  padding: 0.5rem 0;
+  background-color: #4CAf5022;
 }
 
 .roll-step {
@@ -26,11 +29,10 @@
 
 .step-header h3 {
   margin: 0;
-  color: #e2e8f0;
+  color: var(--color-text-primary);
 }
 
 .step-number {
-  background: #646cff;
   color: white;
   width: 28px;
   height: 28px;
@@ -40,4 +42,5 @@
   justify-content: center;
   font-weight: bold;
   font-size: 1rem;
+  border: 1px dashed var(--color-text-primary);
 } 

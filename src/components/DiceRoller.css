@@ -9,22 +9,13 @@
   --color-success: #4CAF50;
   --color-failure: #f44336;
   --color-broken: #333333aa;
+  --color-pushed-bg: #fff3e0;
 
   /* Die Colors */
   --color-die-green: #4CAF50;
   --color-die-yellow: #FFC107;
   --color-die-black: #333;
   --color-die-yellow-text: #333;
-
-  /* Background Colors */
-  --color-background: #f5f5f5;
-  --color-pushed-bg: #fff3e0;
-  --color-white: white;
-
-  /* Text Colors */
-  --color-text-primary: #333;
-  --color-text-secondary: #666;
-  --color-text-light: white;
 
   /* Border/Shadow Colors */
   --color-border: rgba(0, 0, 0, 0.1);
@@ -36,15 +27,14 @@
   flex-direction: column;
   gap: 1.5rem;
   padding: 1.5rem;
-  background: #f8f8f8;
+  background: var(--color-bg-secondary);
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  width: calc(100% - 2rem);
+  width: calc(100% - 3rem);
 }
 
 .dice-label {
   margin: 0;
-  color: #333;
+  color: var(--color-text-primary);
   font-size: 1.5rem;
   text-align: center;
 }
@@ -64,7 +54,7 @@
 
 .dice-control-group label {
   font-weight: 500;
-  color: #333;
+  color: var(--color-text-primary);
 }
 
 .quantity-control {
@@ -77,8 +67,8 @@
   padding: 0.25rem 0.5rem;
   border: 1px solid #ccc;
   border-radius: 4px;
-  background: #f8f8f8;
-  color: #333;
+  background: var(--color-bg-secondary);
+  color: var(--color-text-primary);
   cursor: pointer;
   transition: all 0.2s ease;
   min-width: 2rem;
@@ -104,7 +94,7 @@
   min-width: 2rem;
   text-align: center;
   font-weight: 500;
-  color: #333;
+  color: var(--color-text-primary);
 }
 
 .dice-container {
@@ -131,8 +121,8 @@
   border-radius: 4px;
   font-size: 1rem;
   transition: all 0.2s ease;
-  background: white;
-  color: #333;
+  background: var(--color-bg-secondary);
+  color: var(--color-text-primary);
 }
 
 .roll-description-input::placeholder {
@@ -146,8 +136,8 @@
 }
 
 .roll-description-input:disabled {
-  background: #f5f5f5;
-  color: #666;
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
   cursor: not-allowed;
 }
 
@@ -170,7 +160,7 @@
 
 .roll-button {
   background: #646cff;
-  color: white;
+  color: var(--color-text-light);
 }
 
 .roll-button:hover:not(:disabled) {
@@ -185,7 +175,7 @@
 
 .push-button {
   background: #ff6b6b;
-  color: white;
+  color: var(--color-text-light);
 }
 
 .push-button:hover {
@@ -232,7 +222,7 @@
 
 .roll-history h3 {
   margin: 0 0 1rem;
-  color: #333;
+  color: var(--color-text-primary);
   font-size: 1.25rem;
 }
 
@@ -244,7 +234,7 @@
 
 .history-item {
   padding: 1rem;
-  background: white;
+  background: var(--color-bg-secondary);
   border: 1px solid #eee;
   border-radius: 4px;
   transition: transform 0.2s ease;
@@ -255,7 +245,7 @@
 }
 
 .history-item.pushed {
-  background: #fff3e0;
+  background: var(--color-pushed-bg);
   border-left: 4px solid #ff6b6b;
 }
 
@@ -327,15 +317,14 @@
 }
 
 .summary-badge.broken {
-  background: #fff3e0;
-  color: #f57c00;
+  background: var(--color-broken);
+  color: var(--color-text-light);
 }
 
 .no-rolls {
   text-align: center;
   padding: 2rem;
-  color: #888;
-  background: #f5f5f5;
+  color: var(--color-text-primary);
   border-radius: 4px;
   font-style: italic;
 }
@@ -349,14 +338,16 @@
 
 .clear-history-button {
   padding: 0.5rem 1rem;
-  background-color: #dc3545;
-  color: white;
-  border: none;
+  background-color: var(--color-bg-button-warning);
+  color: var(--color-text-light);
+  border: 1px solid var(--color-text-primary);
   border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.2s;
+  font-size: 0.9rem;
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
 }
 
 .clear-history-button:hover {
-  background-color: #c82333;
+  opacity: 1;
 } 
