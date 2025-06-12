@@ -1,5 +1,5 @@
 // Types for the tab navigation
-type Tab = 'skills' | 'rot'
+type Tab = 'skills' | 'rot' | 'character'
 
 // Props for the TabNavigation component
 type TabNavigationProps = {
@@ -8,7 +8,7 @@ type TabNavigationProps = {
 }
 
 /**
- * TabNavigation component for switching between different dice rollers
+ * TabNavigation component for switching between different dice rollers and character sheet
  * @param {TabNavigationProps} props - Component props
  * @param {function} props.onTabChange - Callback when tab changes
  * @param {Tab} props.activeTab - Currently active tab
@@ -27,6 +27,12 @@ const TabNavigation = ({ onTabChange, activeTab }: TabNavigationProps) => {
         onClick={() => onTabChange('rot')}
       >
         Rot Roller
+      </button>
+      <button
+        className={`tab-button ${activeTab === 'character' ? 'active' : ''}`}
+        onClick={() => onTabChange('character')}
+      >
+        Character Sheet
       </button>
     </div>
   )

@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react'
 import SkillRoller from './components/SkillRoller'
 import RotRoller from './components/RotRoller'
+import CharacterSheet from './components/CharacterSheet'
 import TabNavigation from './components/TabNavigation'
 import './App.css'
 
 function App() {
-  const [activeTab, setActiveTab] = useState<'skills' | 'rot'>('skills')
+  const [activeTab, setActiveTab] = useState<'skills' | 'rot' | 'character'>('skills')
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     if (typeof window !== 'undefined') {
       return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
@@ -32,7 +33,13 @@ function App() {
       </button>
       <TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />
       <div className="roller-container">
-        {activeTab === 'skills' ? <SkillRoller /> : <RotRoller />}
+        {activeTab === 'skills' ? (
+          <SkillRoller />
+        ) : activeTab === 'rot' ? (
+          <RotRoller />
+        ) : (
+          <CharacterSheet />
+        )}
       </div>
     </div>
   )
