@@ -8,8 +8,10 @@ export type Role =
   | 'Boss'
   | 'Grunt';
 
+export type AttributeName = 'Strength' | 'Agility' | 'Wits' | 'Empathy';
+
 export type Attribute = {
-  name: 'Strength' | 'Agility' | 'Wits' | 'Empathy';
+  name: AttributeName;
   value: number;
   trauma: number;
 };
@@ -86,10 +88,10 @@ export type Character = {
   role: Role;
   appearance: Appearance;
   attributes: {
-    strength: number;
-    agility: number;
-    wits: number;
-    empathy: number;
+    strength: number | null;
+    agility: number | null;
+    wits: number | null;
+    empathy: number | null;
   };
   skills: {
     [key in Skill]: number;
@@ -111,10 +113,10 @@ export const createEmptyCharacter = (): Character => ({
     clothing: ''
   },
   attributes: {
-    strength: 2,
-    agility: 2,
-    wits: 2,
-    empathy: 2,
+    strength: null,
+    agility: null,
+    wits: null,
+    empathy: null,
   },
   skills: {
     Melee: 0,

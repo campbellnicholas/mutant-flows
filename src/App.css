@@ -391,6 +391,16 @@
   min-width: 100px;
 }
 
+.character-sheet input[type="text"], .character-sheet textarea, .character-sheet input[type="number"] {
+  padding: 0.75rem;
+  border: 2px solid var(--color-border);
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  background: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+}
+
 .attribute-row,
 .skill-row,
 .points-row {
@@ -439,12 +449,15 @@
   font-weight: bold;
 }
 
-select {
-  padding: 0.25rem;
-  border: 1px solid var(--color-border);
+.character-sheet select {
+  padding: 0.75rem;
+  border: 2px solid var(--color-border);
   border-radius: 4px;
-  background-color: var(--color-bg-primary);
+  font-size: 1rem;
+  background: var(--color-bg-secondary);
   color: var(--color-text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 /* Points Input Styles */
@@ -686,20 +699,116 @@ select {
   color: var(--color-text-primary);
 }
 
-.appearance-field textarea {
-  width: 100%;
-  min-height: 80px;
-  padding: 0.5rem;
-  border: 1px solid var(--color-border);
-  border-radius: 4px;
-  background-color: var(--color-bg-primary);
-  color: var(--color-text-primary);
-  font-family: inherit;
-  resize: vertical;
-}
-
 .appearance-field textarea:focus {
   outline: none;
   border-color: var(--color-primary);
   box-shadow: 0 0 0 2px var(--color-primary-light);
+}
+
+.attributes-section {
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.attributes-grid {
+  
+}
+
+.attribute-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid var(--color-border);
+}
+
+.attribute-item label {
+  font-weight: bold;
+  color: var(--color-text-primary);
+}
+
+.attribute-item input[type="number"] {
+  width: 60px;
+}
+
+/* Remove spinner buttons from number inputs */
+.attribute-item input[type="number"]::-webkit-inner-spin-button,
+.attribute-item input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.attribute-item input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.trauma-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.bubbles-container {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.bubble {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid var(--color-border);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.bubble.filled {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.bubble.broken {
+  background-color: var(--color-error);
+  border-color: var(--color-error);
+  animation: pulse 2s infinite;
+}
+
+.broken-indicator {
+  color: var(--color-error);
+  font-weight: bold;
+  text-align: center;
+  padding: 0.5rem;
+  background-color: var(--color-error-light);
+  border-radius: 4px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.trauma-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.trauma-header input[type="number"] {
+  width: 50px;
+  padding: 0.25rem;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  text-align: center;
 }

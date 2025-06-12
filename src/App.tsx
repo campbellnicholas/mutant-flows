@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import SkillRoller from './components/SkillRoller'
 import RotRoller from './components/RotRoller'
-import CharacterSheet from './components/CharacterSheet'
+import { CharacterSheet } from './components/CharacterSheet'
 import TabNavigation from './components/TabNavigation'
 import './App.css'
 
