@@ -1,80 +1,47 @@
-import { useState, useEffect } from 'react';
-import type { 
-  Character, 
-  Role, 
-  Attribute, 
-  GearItem
-} from '../types/character';
-import { 
-  defaultAttributes,
-  defaultBaseSkills,
-  getSpecialistSkillForRole
-} from '../types/character';
+import React, { useState, useEffect } from 'react';
+import type { Character, Role, Skill } from '../types/character';
+import { createEmptyCharacter } from '../types/character';
+import { EquipmentSection } from './EquipmentSection';
 
-const CharacterSheet = () => {
+export const CharacterSheet: React.FC = () => {
   const [character, setCharacter] = useState<Character>(() => {
-    const savedCharacter = localStorage.getItem('mutantCharacter');
+    const savedCharacter = localStorage.getItem('character');
     if (savedCharacter) {
-      return JSON.parse(savedCharacter);
+      const parsed = JSON.parse(savedCharacter);
+      // Ensure appearance exists with default values if missing
+      if (!parsed.appearance) {
+        parsed.appearance = {
+          face: '',
+          body: '',
+          clothing: ''
+        };
+      }
+      return parsed;
     }
-    return {
-      name: '',
-      role: 'Enforcer',
-      appearance: {
-        face: '',
-        body: '',
-        clothing: ''
-      },
-      attributes: defaultAttributes,
-      baseSkills: defaultBaseSkills,
-      specialistSkills: [getSpecialistSkillForRole('Enforcer')],
-      rotPoints: 0,
-      experiencePoints: 0,
-      mutationPoints: 0,
-      gear: [],
-      weapons: [],
-      armor: null,
-      rotSuit: null,
-      talents: [],
-      mutations: []
-    };
+    return createEmptyCharacter();
   });
 
   useEffect(() => {
-    localStorage.setItem('mutantCharacter', JSON.stringify(character));
+    localStorage.setItem('character', JSON.stringify(character));
   }, [character]);
 
-  const updateAttribute = (index: number, field: keyof Attribute, value: number) => {
+  const handleAttributeChange = (attribute: keyof Character['attributes'], value: number) => {
     setCharacter(prev => ({
       ...prev,
-      attributes: prev.attributes.map((attr, i) => 
-        i === index ? { ...attr, [field]: value } : attr
-      )
+      attributes: {
+        ...prev.attributes,
+        [attribute]: value
+      }
     }));
   };
 
-  const updateBaseSkill = (index: number, value: number) => {
+  const handleSkillChange = (skill: Skill, value: number) => {
     setCharacter(prev => ({
       ...prev,
-      baseSkills: prev.baseSkills.map((skill, i) => 
-        i === index ? { ...skill, value } : skill
-      )
-    }));
-  };
-
-  const updateSpecialistSkill = (index: number, value: number) => {
-    setCharacter(prev => ({
-      ...prev,
-      specialistSkills: prev.specialistSkills.map((skill, i) => 
-        i === index ? { ...skill, value } : skill
-      )
-    }));
-  };
-
-  const removeGearItem = (index: number) => {
-    setCharacter(prev => ({
-      ...prev,
-      gear: prev.gear.filter((_, i) => i !== index)
+      skills: {
+        ...prev.skills,
+        [skill]: value
+      }
     }));
   };
 
@@ -102,13 +69,20 @@ const CharacterSheet = () => {
     </div>
   );
 
+  const updateAppearance = (field: keyof Character['appearance'], value: string) => {
+    setCharacter(prev => ({
+      ...prev,
+      appearance: {
+        ...prev.appearance,
+        [field]: value
+      }
+    }));
+  };
+
   return (
     <div className="character-sheet">
-      <h2>Character Sheet</h2>
-      
-      {/* Basic Info */}
-      <section className="basic-info">
-        <h3>Basic Info</h3>
+      <section>
+        <h2>Basic Info</h2>
         <div className="input-group">
           <label>Name:</label>
           <input
@@ -121,131 +95,90 @@ const CharacterSheet = () => {
           <label>Role:</label>
           <select
             value={character.role}
-            onChange={(e) => {
-              const newRole = e.target.value as Role;
-              setCharacter(prev => ({
-                ...prev,
-                role: newRole,
-                specialistSkills: [getSpecialistSkillForRole(newRole)]
-              }));
-            }}
+            onChange={(e) => setCharacter(prev => ({ ...prev, role: e.target.value as Role }))}
           >
-            <option value="Enforcer">Enforcer</option>
             <option value="Gearhead">Gearhead</option>
-            <option value="Stalker">Stalker</option>
             <option value="Fixer">Fixer</option>
             <option value="Dog Handler">Dog Handler</option>
+            <option value="Enforcer">Enforcer</option>
+            <option value="Stalker">Stalker</option>
             <option value="Chronicler">Chronicler</option>
-            <option value="Boss">Boss</option>
-            <option value="Grunt">Grunt</option>
           </select>
         </div>
       </section>
 
-      {/* Appearance */}
-      <section className="appearance">
-        <h3>Appearance</h3>
-        <div className="input-group">
-          <label>Face:</label>
-          <input
-            type="text"
-            value={character.appearance.face}
-            onChange={(e) => setCharacter(prev => ({
-              ...prev,
-              appearance: { ...prev.appearance, face: e.target.value }
-            }))}
-          />
-        </div>
-        <div className="input-group">
-          <label>Body:</label>
-          <input
-            type="text"
-            value={character.appearance.body}
-            onChange={(e) => setCharacter(prev => ({
-              ...prev,
-              appearance: { ...prev.appearance, body: e.target.value }
-            }))}
-          />
-        </div>
-        <div className="input-group">
-          <label>Clothing:</label>
-          <input
-            type="text"
-            value={character.appearance.clothing}
-            onChange={(e) => setCharacter(prev => ({
-              ...prev,
-              appearance: { ...prev.appearance, clothing: e.target.value }
-            }))}
-          />
+      <section>
+        <h2>Appearance</h2>
+        <div className="appearance-section">
+          <h3>Appearance</h3>
+          <div className="appearance-fields">
+            <div className="appearance-field">
+              <label>Face</label>
+              <textarea
+                value={character.appearance?.face || ''}
+                onChange={(e) => updateAppearance('face', e.target.value)}
+                placeholder="Describe the character's face..."
+                rows={3}
+              />
+            </div>
+            <div className="appearance-field">
+              <label>Body</label>
+              <textarea
+                value={character.appearance?.body || ''}
+                onChange={(e) => updateAppearance('body', e.target.value)}
+                placeholder="Describe the character's body..."
+                rows={3}
+              />
+            </div>
+            <div className="appearance-field">
+              <label>Clothing</label>
+              <textarea
+                value={character.appearance?.clothing || ''}
+                onChange={(e) => updateAppearance('clothing', e.target.value)}
+                placeholder="Describe the character's clothing..."
+                rows={3}
+              />
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Attributes */}
-      <section className="attributes">
-        <h3>Attributes</h3>
-        {character.attributes.map((attr, index) => (
-          <div key={attr.name} className="attribute-row">
-            <span>{attr.name}</span>
+      <section>
+        <h2>Attributes</h2>
+        {Object.entries(character.attributes).map(([attr, value]) => (
+          <div key={attr} className="attribute-row">
+            <label>{attr.charAt(0).toUpperCase() + attr.slice(1)}:</label>
             <div className="attribute-values">
-              <label>Value:</label>
               <input
                 type="number"
+                value={value}
+                onChange={(e) => handleAttributeChange(attr as keyof Character['attributes'], parseInt(e.target.value) || 0)}
                 min="1"
                 max="5"
-                value={attr.value}
-                onChange={(e) => updateAttribute(index, 'value', parseInt(e.target.value) || 0)}
-              />
-              <label>Trauma:</label>
-              <input
-                type="number"
-                min="0"
-                max={attr.value}
-                value={attr.trauma}
-                onChange={(e) => updateAttribute(index, 'trauma', parseInt(e.target.value) || 0)}
               />
             </div>
           </div>
         ))}
       </section>
 
-      {/* Skills */}
-      <section className="skills">
-        <h3>Skills</h3>
-        <div className="base-skills">
-          <h4>Base Skills</h4>
-          {character.baseSkills.map((skill, index) => (
-            <div key={skill.name} className="skill-row">
-              <span>{skill.name} ({skill.attribute})</span>
-              <input
-                type="number"
-                min="0"
-                max="3"
-                value={skill.value}
-                onChange={(e) => updateBaseSkill(index, parseInt(e.target.value) || 0)}
-              />
-            </div>
-          ))}
-        </div>
-        <div className="specialist-skills">
-          <h4>Specialist Skills</h4>
-          {character.specialistSkills.map((skill, index) => (
-            <div key={skill.name} className="skill-row">
-              <span>{skill.name} ({skill.attribute})</span>
-              <input
-                type="number"
-                min="0"
-                max="3"
-                value={skill.value}
-                onChange={(e) => updateSpecialistSkill(index, parseInt(e.target.value) || 0)}
-              />
-            </div>
-          ))}
-        </div>
+      <section>
+        <h2>Skills</h2>
+        {Object.entries(character.skills).map(([skill, value]) => (
+          <div key={skill} className="skill-row">
+            <label>{skill}:</label>
+            <input
+              type="number"
+              value={value}
+              onChange={(e) => handleSkillChange(skill as Skill, parseInt(e.target.value) || 0)}
+              min="0"
+              max="5"
+            />
+          </div>
+        ))}
       </section>
 
-      {/* Points */}
-      <section className="points">
-        <h3>Points</h3>
+      <section>
+        <h2>Points</h2>
         <div className="points-row">
           <label>Rot Points:</label>
           <div className="points-input">
@@ -302,22 +235,15 @@ const CharacterSheet = () => {
         </div>
       </section>
 
-      {/* Gear */}
-      <section className="gear">
-        <h3>Gear</h3>
-        {character.gear.map((item, index) => (
-          <div key={index} className="gear-item">
-            <span>{item.name}</span>
-            {!item.isTiny && <span>Weight: {item.weight}</span>}
-            <button onClick={() => removeGearItem(index)}>Remove</button>
-          </div>
-        ))}
-        <div className="gear-total">
-          Total Weight: {character.gear.reduce((sum, item) => sum + (item.weight || 0), 0)} / {(character.attributes.find(attr => attr.name === 'Strength')?.value ?? 0) * 2}
-        </div>
+      <section>
+        <h2>Equipment</h2>
+        <EquipmentSection
+          weapons={character.weapons}
+          armor={character.armor}
+          onWeaponsChange={(weapons) => setCharacter(prev => ({ ...prev, weapons }))}
+          onArmorChange={(armor) => setCharacter(prev => ({ ...prev, armor }))}
+        />
       </section>
     </div>
   );
-};
-
-export default CharacterSheet; 
+}; 

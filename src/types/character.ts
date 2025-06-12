@@ -31,22 +31,28 @@ export type SpecialistSkill = {
 };
 
 export type GearItem = {
+  id: string;
   name: string;
   weight: number;
-  isTiny?: boolean;
+  isTiny: boolean;
 };
 
+export type Range = 'Arm\'s Length' | 'Near' | 'Short' | 'Long';
+
 export type Weapon = {
+  id: string;
   name: string;
   bonus: number;
   damage: number;
-  range: 'Arm\'s Length' | 'Near' | 'Short' | 'Long';
-  special: string;
+  range: Range;
+  specialNotes?: string;
 };
 
 export type Armor = {
+  id: string;
   name: string;
   rating: number;
+  condition: number; // 0-10, representing current condition
 };
 
 export type RotSuit = {
@@ -54,36 +60,84 @@ export type RotSuit = {
   rating: number;
 };
 
+export type Skill = 
+  | 'Melee'
+  | 'Might'
+  | 'Endurance'
+  | 'Stealth'
+  | 'Sneak'
+  | 'Move'
+  | 'Scout'
+  | 'Comprehend'
+  | 'Know the Zone'
+  | 'Sense Emotion'
+  | 'Manipulate'
+  | 'Heal'
+  | 'Survival';
+
+export type Appearance = {
+  face: string;
+  body: string;
+  clothing: string;
+};
+
 export type Character = {
-  // Basic Info
   name: string;
   role: Role;
-  appearance: {
-    face: string;
-    body: string;
-    clothing: string;
+  appearance: Appearance;
+  attributes: {
+    strength: number;
+    agility: number;
+    wits: number;
+    empathy: number;
   };
-  
-  // Attributes and Skills
-  attributes: Attribute[];
-  baseSkills: BaseSkill[];
-  specialistSkills: SpecialistSkill[];
-  
-  // Points
-  rotPoints: number;
-  experiencePoints: number;
-  mutationPoints: number;
-  
-  // Equipment
-  gear: GearItem[];
+  skills: {
+    [key in Skill]: number;
+  };
   weapons: Weapon[];
-  armor: Armor | null;
-  rotSuit: RotSuit | null;
-  
-  // Special Abilities
-  talents: string[];
-  mutations: string[];
+  armor: Armor[];
+  gear: GearItem[];
+  experiencePoints: number;
+  rotPoints: number;
+  mutationPoints: number;
 };
+
+export const createEmptyCharacter = (): Character => ({
+  name: '',
+  role: 'Gearhead',
+  appearance: {
+    face: '',
+    body: '',
+    clothing: ''
+  },
+  attributes: {
+    strength: 2,
+    agility: 2,
+    wits: 2,
+    empathy: 2,
+  },
+  skills: {
+    Melee: 0,
+    Might: 0,
+    Endurance: 0,
+    Stealth: 0,
+    Sneak: 0,
+    Move: 0,
+    Scout: 0,
+    Comprehend: 0,
+    'Know the Zone': 0,
+    'Sense Emotion': 0,
+    Manipulate: 0,
+    Heal: 0,
+    Survival: 0,
+  },
+  weapons: [],
+  armor: [],
+  gear: [],
+  experiencePoints: 0,
+  rotPoints: 0,
+  mutationPoints: 0,
+});
 
 // Default values for new characters
 export const defaultAttributes: Attribute[] = [
