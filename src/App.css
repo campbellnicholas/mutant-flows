@@ -461,20 +461,22 @@
 }
 
 /* Points Input Styles */
-.points-input {
+.points-bubbles-row {
   display: flex;
+  flex-direction: row;
   align-items: center;
   gap: 1rem;
   flex: 1;
 }
 
-.points-input input[type="range"] {
-  flex: 1;
-  height: 4px;
-  -webkit-appearance: none;
-  background: var(--color-border);
-  border-radius: 2px;
-  outline: none;
+.points-header {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+input[type="range"].points-input {
   display: none;
 }
 
@@ -556,6 +558,10 @@
   min-width: 2rem;
   text-align: center;
   font-weight: bold;
+}
+
+.section-points .points-bubbles-row {
+  margin-bottom: 2rem;
 }
 
 /* Equipment Section Styles */
@@ -729,7 +735,7 @@
 }
 
 .attribute-item input[type="number"] {
-  width: 60px;
+  width: 2em;
 }
 
 /* Remove spinner buttons from number inputs */

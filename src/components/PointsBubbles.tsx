@@ -70,35 +70,34 @@ export const PointsBubbles: React.FC<PointsBubblesProps> = ({
   bubblesSetCharacter, 
   bubblesField 
 }) => {
-  const validatedValue = useMemo(() => {
-    const numValue = Number(bubblesValue ?? bubblesMin);
-    if (isNaN(numValue)) return bubblesMin;
-    return Math.max(bubblesMin, Math.min(bubblesMax, numValue));
-  }, [bubblesValue, bubblesMin, bubblesMax]);
+  // Validate and ensure value is a number
+  const validatedValue = typeof bubblesValue === 'number' ? bubblesValue : bubblesMin;
+  const safeValue = isNaN(validatedValue) ? bubblesMin : validatedValue;
+
+  // Ensure value is within bounds
+  const boundedValue = Math.max(bubblesMin, Math.min(bubblesMax, safeValue));
+
+  // Calculate number of filled bubbles
+  const filledBubbles = Math.floor(boundedValue);
 
   const handleKeyPress = useCallback((newValue: number) => {
+    const boundedNewValue = Math.max(bubblesMin, Math.min(bubblesMax, newValue));
     bubblesSetCharacter(prev => ({
       ...prev,
-      [bubblesField]: newValue
+      [bubblesField]: boundedNewValue
     }));
-  }, [bubblesField, bubblesSetCharacter]);
+  }, [bubblesMin, bubblesMax, bubblesSetCharacter, bubblesField]);
 
   const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const inputValue = e.target.value;
-    const parsedValue = inputValue === '' ? bubblesMin : parseInt(inputValue);
-    
-    if (!isNaN(parsedValue)) {
-      const newValue = Math.max(bubblesMin, Math.min(bubblesMax, parsedValue));
-      bubblesSetCharacter(prev => ({
-        ...prev,
-        [bubblesField]: newValue
-      }));
+    const newValue = parseInt(e.target.value, 10);
+    if (!isNaN(newValue)) {
+      handleKeyPress(newValue);
     }
-  }, [bubblesMin, bubblesMax, bubblesField, bubblesSetCharacter]);
+  }, [handleKeyPress]);
 
   const memoizedBubbles = useMemo(() => 
-    renderPointsBubbles(validatedValue, bubblesMax, bubblesSetCharacter, bubblesField, handleKeyPress),
-    [validatedValue, bubblesMax, bubblesSetCharacter, bubblesField, handleKeyPress]
+    renderPointsBubbles(filledBubbles, bubblesMax, bubblesSetCharacter, bubblesField, handleKeyPress),
+    [filledBubbles, bubblesMax, bubblesSetCharacter, bubblesField, handleKeyPress]
   );
 
   // Validate props
@@ -108,22 +107,23 @@ export const PointsBubbles: React.FC<PointsBubblesProps> = ({
   }
 
   return (
-    <div className="points-row">
-      <label htmlFor={`${bubblesField}-input`}>{bubblesFieldLabel}:</label>
-      <div className="points-input">
+    <div className="points-bubbles-row">
+      <div className="points-header">
+        <label>{bubblesFieldLabel}</label>
         <input
           id={`${bubblesField}-input`}
+          className="points-input"
           type="range"
           min={bubblesMin}
           max={bubblesMax}
           step="1"
-          value={validatedValue}
+          value={boundedValue}
           onChange={handleInputChange}
           aria-label={`${bubblesFieldLabel} value`}
         />
         {memoizedBubbles}
         <span className="points-value" aria-live="polite">
-          {validatedValue}
+          {boundedValue}
         </span>
       </div>
     </div>

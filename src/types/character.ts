@@ -8,12 +8,17 @@ export type Role =
   | 'Boss'
   | 'Grunt';
 
-export type AttributeName = 'Strength' | 'Agility' | 'Wits' | 'Empathy';
+export type AttributeName = 'strength' | 'agility' | 'wits' | 'empathy';
+
+export type TraumaLabel = 'Damage' | 'Fatigue' | 'Confusion' | 'Doubt';
 
 export type Attribute = {
   name: AttributeName;
   value: number;
-  trauma: number;
+  trauma: {
+    value: number;
+  };
+  traumaName: TraumaLabel;
 };
 
 export type BaseSkill = {
@@ -63,19 +68,18 @@ export type RotSuit = {
 };
 
 export type Skill = 
-  | 'Melee'
-  | 'Might'
-  | 'Endurance'
-  | 'Stealth'
+  | 'Endure'
+  | 'Force'
+  | 'Fight'
   | 'Sneak'
   | 'Move'
+  | 'Shoot'
   | 'Scout'
   | 'Comprehend'
   | 'Know the Zone'
   | 'Sense Emotion'
   | 'Manipulate'
-  | 'Heal'
-  | 'Survival';
+  | 'Heal';
 
 export type Appearance = {
   face: string;
@@ -88,10 +92,10 @@ export type Character = {
   role: Role;
   appearance: Appearance;
   attributes: {
-    strength: number | null;
-    agility: number | null;
-    wits: number | null;
-    empathy: number | null;
+    strength: Attribute;
+    agility: Attribute;
+    wits: Attribute;
+    empathy: Attribute;
   };
   skills: {
     [key in Skill]: number;
@@ -113,25 +117,24 @@ export const createEmptyCharacter = (): Character => ({
     clothing: ''
   },
   attributes: {
-    strength: null,
-    agility: null,
-    wits: null,
-    empathy: null,
+    strength: { name: 'strength', value: 0, trauma: { value: 0 }, traumaName: 'Damage' },
+    agility: { name: 'agility', value: 0, trauma: { value: 0 }, traumaName: 'Fatigue' },
+    wits: { name: 'wits', value: 0, trauma: { value: 0 }, traumaName: 'Confusion' },
+    empathy: { name: 'empathy', value: 0, trauma: { value: 0 }, traumaName: 'Doubt' },
   },
   skills: {
-    Melee: 0,
-    Might: 0,
-    Endurance: 0,
-    Stealth: 0,
+    Endure: 0,
+    Force: 0,
+    Fight: 0,
     Sneak: 0,
     Move: 0,
+    Shoot: 0,
     Scout: 0,
     Comprehend: 0,
     'Know the Zone': 0,
     'Sense Emotion': 0,
     Manipulate: 0,
     Heal: 0,
-    Survival: 0,
   },
   weapons: [],
   armor: [],
@@ -143,10 +146,10 @@ export const createEmptyCharacter = (): Character => ({
 
 // Default values for new characters
 export const defaultAttributes: Attribute[] = [
-  { name: 'Strength', value: 4, trauma: 0 },
-  { name: 'Agility', value: 4, trauma: 0 },
-  { name: 'Wits', value: 4, trauma: 0 },
-  { name: 'Empathy', value: 4, trauma: 0 },
+  { name: 'strength', value: 0, trauma: { value: 0 }, traumaName: 'Damage' },
+  { name: 'agility', value: 0, trauma: { value: 0 }, traumaName: 'Fatigue' },
+  { name: 'wits', value: 0, trauma: { value: 0 }, traumaName: 'Confusion' },
+  { name: 'empathy', value: 0, trauma: { value: 0 }, traumaName: 'Doubt' },
 ];
 
 export const defaultBaseSkills: BaseSkill[] = [

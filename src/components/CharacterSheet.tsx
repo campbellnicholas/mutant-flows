@@ -1,14 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import type { Character, Role, Skill } from '../types/character';
+import type { Character, Role, Skill, Attribute } from '../types/character';
 import { createEmptyCharacter } from '../types/character';
 import { EquipmentSection } from './EquipmentSection';
 import { PointsBubbles } from './PointsBubbles';
+
+const defaultAttributes: Record<keyof Character['attributes'], Attribute> = {
+  strength: { name: 'strength', value: 0, trauma: { value: 0 }, traumaName: 'Damage' },
+  agility: { name: 'agility', value: 0, trauma: { value: 0 }, traumaName: 'Fatigue' },
+  wits: { name: 'wits', value: 0, trauma: { value: 0 }, traumaName: 'Confusion' },
+  empathy: { name: 'empathy', value: 0, trauma: { value: 0 }, traumaName: 'Doubt' },
+};
 
 export const CharacterSheet: React.FC = () => {
   const [character, setCharacter] = useState<Character>(() => {
     const savedCharacter = localStorage.getItem('character');
     if (savedCharacter) {
       const parsed = JSON.parse(savedCharacter);
+      // Defensive: ensure all attributes are present
+      parsed.attributes = { ...defaultAttributes, ...parsed.attributes };
       // Ensure appearance exists with default values if missing
       if (!parsed.appearance) {
         parsed.appearance = {
@@ -46,30 +55,6 @@ export const CharacterSheet: React.FC = () => {
     }));
   };
 
-  const renderPointsBubbles = (value: number, max: number, setCharacter: React.Dispatch<React.SetStateAction<Character>>, field: keyof Character) => (
-    <div className="points-bubbles">
-      <div
-        className={`points-bubble x-bubble ${value === 0 ? 'filled' : ''}`}
-        onClick={() => setCharacter(prev => ({
-          ...prev,
-          [field]: 0
-        }))}
-        title="0"
-      />
-      {Array.from({ length: max }, (_, i) => (
-        <div
-          key={i}
-          className={`points-bubble ${i < value ? 'filled' : ''}`}
-          onClick={() => setCharacter(prev => ({
-            ...prev,
-            [field]: i + 1
-          }))}
-          title={`${i + 1}`}
-        />
-      ))}
-    </div>
-  );
-
   const updateAppearance = (field: keyof Character['appearance'], value: string) => {
     setCharacter(prev => ({
       ...prev,
@@ -82,10 +67,10 @@ export const CharacterSheet: React.FC = () => {
 
   const getTraumaLabel = (attributeName: keyof Character['attributes']): string => {
     switch (attributeName) {
-      case 'Strength': return 'Damage';
-      case 'Agility': return 'Fatigue';
-      case 'Wits': return 'Confusion';
-      case 'Empathy': return 'Doubt';
+      case 'strength': return 'Damage';
+      case 'agility': return 'Fatigue';
+      case 'wits': return 'Confusion';
+      case 'empathy': return 'Doubt';
       default: return '';
     }
   };
@@ -169,36 +154,42 @@ export const CharacterSheet: React.FC = () => {
         <div className="attributes-section">
           <h3>Attributes</h3>
           <div className="attributes-grid">
-            {Object.entries(character.attributes).map(([attr, value]) => (
-              <div key={attr} className="attribute-item">
-                <label>{attr.charAt(0).toUpperCase() + attr.slice(1)}:</label>
-                <input
-                  type="number"
-                  value={value ?? ''}
-                  onChange={(e) => {
-                    const inputValue = e.target.value;
-                    const parsedValue = inputValue === '' ? null : parseInt(inputValue);
-                    if (inputValue === '' || !isNaN(parsedValue!)) {
+            {Object.entries(character.attributes).map(([attrKey, attribute]) => {
+              if (!attribute) return null; // Defensive: skip if undefined
+              // Ensure trauma property exists with default value
+              const trauma = attribute.trauma || { value: 0 };
+              return (
+                <div key={attrKey} className="attribute-item">
+                  <label>{attribute.name || attrKey.charAt(0).toUpperCase() + attrKey.slice(1)}:</label>
+                  <input
+                    type="number"
+                    value={attribute.value}
+                    onChange={(e) => {
+                      const inputValue = e.target.value;
+                      const parsedValue = inputValue === '' ? 0 : parseInt(inputValue);
                       setCharacter(prev => ({
                         ...prev,
                         attributes: {
                           ...prev.attributes,
-                          [attr]: parsedValue
+                          [attrKey as keyof typeof character.attributes]: {
+                            ...prev.attributes[attrKey as keyof typeof character.attributes],
+                            value: parsedValue
+                          }
                         }
                       }));
-                    }
-                  }}
-                />
-                <PointsBubbles 
-                  bubblesValue={value ?? 0} 
-                  bubblesMin={0} 
-                  bubblesMax={value ?? 0} 
-                  bubblesFieldLabel={attr} 
-                  bubblesSetCharacter={setCharacter} 
-                  bubblesField={`attributes.${attr}` as keyof Character} 
-                />
-              </div>
-            ))}
+                    }}
+                  />
+                  <PointsBubbles 
+                    bubblesValue={trauma.value} 
+                    bubblesMin={0} 
+                    bubblesMax={attribute.value} 
+                    bubblesFieldLabel={attribute.traumaName || getTraumaLabel(attrKey as keyof Character['attributes'])} 
+                    bubblesSetCharacter={setCharacter} 
+                    bubblesField={`attributes.${attrKey as keyof typeof character.attributes}.trauma.value` as keyof Character} 
+                  />
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -219,7 +210,7 @@ export const CharacterSheet: React.FC = () => {
         ))}
       </section>
 
-    <section>
+    <section className="section-points">
         <h2>Points</h2>
         <PointsBubbles bubblesValue={character.rotPoints} bubblesMin={0} bubblesMax={10} bubblesFieldLabel="Rot Points" bubblesSetCharacter={setCharacter} bubblesField="rotPoints" />  
         <PointsBubbles bubblesValue={character.experiencePoints} bubblesMin={0} bubblesMax={10} bubblesFieldLabel="Experience Points" bubblesSetCharacter={setCharacter} bubblesField="experiencePoints" />
@@ -232,7 +223,7 @@ export const CharacterSheet: React.FC = () => {
           weapons={character.weapons}
           armor={character.armor}
           gear={character.gear}
-          strength={character.attributes.strength ?? 0}
+          strength={character.attributes.strength.value}
           onWeaponsChange={(weapons) => setCharacter(prev => ({ ...prev, weapons }))}
           onArmorChange={(armor) => setCharacter(prev => ({ ...prev, armor }))}
           onGearChange={(gear) => setCharacter(prev => ({ ...prev, gear }))}
