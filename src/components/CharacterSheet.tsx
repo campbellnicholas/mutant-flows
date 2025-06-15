@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import type { Character, Role, Skill, Attribute } from '../types/character';
-import { createEmptyCharacter } from '../types/character';
+import { createEmptyCharacter, getBaseSkills, getSpecialistSkillForRole } from '../types/character';
 import { EquipmentSection } from './EquipmentSection';
 import { PointsBubbles } from './PointsBubbles';
 
@@ -26,24 +26,45 @@ export const CharacterSheet: React.FC = () => {
           clothing: ''
         };
       }
+      // Initialize skills with base skills and specialist skill
+      const baseSkills = getBaseSkills().reduce((acc, skill) => ({
+        ...acc,
+        [skill]: parsed.skills?.[skill] ?? 0
+      }), {});
+      const specialistSkill = getSpecialistSkillForRole(parsed.role);
+      parsed.skills = {
+        ...baseSkills,
+        [specialistSkill]: parsed.skills?.[specialistSkill] ?? 1 // Specialist skills start at 1
+      };
       return parsed;
     }
     return createEmptyCharacter();
   });
 
+  // Update skills when role changes
+  useEffect(() => {
+    const specialistSkill = getSpecialistSkillForRole(character.role);
+    setCharacter(prev => {
+      // Get all base skills
+      const baseSkills = getBaseSkills().reduce((acc, skill) => ({
+        ...acc,
+        [skill]: prev.skills[skill] ?? 0
+      }), {} as Record<Skill, number>);
+      
+      // Add the specialist skill
+      return {
+        ...prev,
+        skills: {
+          ...baseSkills,
+          [specialistSkill]: prev.skills[specialistSkill] ?? 1
+        }
+      };
+    });
+  }, [character.role]);
+
   useEffect(() => {
     localStorage.setItem('character', JSON.stringify(character));
   }, [character]);
-
-  const handleAttributeChange = (attribute: keyof Character['attributes'], value: number) => {
-    setCharacter(prev => ({
-      ...prev,
-      attributes: {
-        ...prev.attributes,
-        [attribute]: value
-      }
-    }));
-  };
 
   const handleSkillChange = (skill: Skill, value: number) => {
     setCharacter(prev => ({
@@ -75,12 +96,19 @@ export const CharacterSheet: React.FC = () => {
     }
   };
 
-  // Helper function to convert attributes object to array
-  const getAttributesArray = (attributes: Character['attributes']): Array<{ name: keyof Character['attributes']; value: number; trauma: number }> => {
-    return Object.entries(attributes).map(([name, value]) => ({
-      name: name as keyof Character['attributes'],
-      value: typeof value === 'number' ? value : 1,
-      trauma: 0
+  const updateTraumaValue = (attrKey: keyof Character['attributes'], value: number) => {
+    setCharacter(prev => ({
+      ...prev,
+      attributes: {
+        ...prev.attributes,
+        [attrKey]: {
+          ...prev.attributes[attrKey],
+          trauma: {
+            ...prev.attributes[attrKey].trauma,
+            value
+          }
+        }
+      }
     }));
   };
 
@@ -184,8 +212,8 @@ export const CharacterSheet: React.FC = () => {
                     bubblesMin={0} 
                     bubblesMax={attribute.value} 
                     bubblesFieldLabel={attribute.traumaName || getTraumaLabel(attrKey as keyof Character['attributes'])} 
-                    bubblesSetCharacter={setCharacter} 
-                    bubblesField={`attributes.${attrKey as keyof typeof character.attributes}.trauma.value` as keyof Character} 
+                    bubblesSetCharacter={(value: number) => updateTraumaValue(attrKey as keyof Character['attributes'], value)} 
+                    bubblesField={`${attribute.traumaName}Points`} 
                   />
                 </div>
               );
@@ -196,25 +224,61 @@ export const CharacterSheet: React.FC = () => {
 
       <section>
         <h2>Skills</h2>
-        {Object.entries(character.skills).map(([skill, value]) => (
-          <div key={skill} className="skill-row">
-            <label>{skill}:</label>
+        <div className="skills-section">
+          <h3>Base Skills</h3>
+          {getBaseSkills().map(skill => (
+            <div key={skill} className="skill-row">
+              <label>{skill}:</label>
+              <input
+                type="number"
+                value={character.skills[skill] ?? 0}
+                onChange={(e) => handleSkillChange(skill, parseInt(e.target.value) || 0)}
+                min="0"
+                max="5"
+              />
+            </div>
+          ))}
+          
+          <h3>Specialist Skill</h3>
+          <div className="skill-row">
+            <label>{getSpecialistSkillForRole(character.role)}:</label>
             <input
               type="number"
-              value={value}
-              onChange={(e) => handleSkillChange(skill as Skill, parseInt(e.target.value) || 0)}
-              min="0"
+              value={character.skills[getSpecialistSkillForRole(character.role)] ?? 1}
+              onChange={(e) => handleSkillChange(getSpecialistSkillForRole(character.role), parseInt(e.target.value) || 0)}
+              min="1"
               max="5"
             />
           </div>
-        ))}
+        </div>
       </section>
 
     <section className="section-points">
         <h2>Points</h2>
-        <PointsBubbles bubblesValue={character.rotPoints} bubblesMin={0} bubblesMax={10} bubblesFieldLabel="Rot Points" bubblesSetCharacter={setCharacter} bubblesField="rotPoints" />  
-        <PointsBubbles bubblesValue={character.experiencePoints} bubblesMin={0} bubblesMax={10} bubblesFieldLabel="Experience Points" bubblesSetCharacter={setCharacter} bubblesField="experiencePoints" />
-        <PointsBubbles bubblesValue={character.mutationPoints} bubblesMin={0} bubblesMax={10} bubblesFieldLabel="Mutation Points" bubblesSetCharacter={setCharacter} bubblesField="mutationPoints" />
+        <PointsBubbles 
+          bubblesValue={character.rotPoints} 
+          bubblesMin={0} 
+          bubblesMax={10} 
+          bubblesFieldLabel="Rot Points" 
+          bubblesSetCharacter={(value) => setCharacter(prev => ({ ...prev, rotPoints: value }))} 
+          bubblesField="rotPoints" 
+        />  
+        <PointsBubbles 
+          bubblesValue={character.experiencePoints} 
+          bubblesMin={0} 
+          bubblesMax={10} 
+          bubblesFieldLabel="Experience Points" 
+          bubblesSetCharacter={(value) => setCharacter(prev => ({ ...prev, experiencePoints: value }))} 
+          bubblesField="experiencePoints" 
+        />
+        <PointsBubbles 
+          bubblesValue={character.mutationPoints} 
+          bubblesMin={0} 
+          bubblesMax={10} 
+          bubblesFieldLabel="Mutation Points" 
+          bubblesSetCharacter={(value) => setCharacter(prev => ({ ...prev, mutationPoints: value }))} 
+          bubblesField="mutationPoints" 
+        />
     </section>
 
       <section>

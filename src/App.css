@@ -109,7 +109,7 @@
   width: 50%;
 }
 
-.checkbox-group input[type="checkbox"] {
+input[type="checkbox"] {
   appearance: none;
   -webkit-appearance: none;
   width: 1.2rem;
@@ -127,16 +127,16 @@
   vertical-align: middle;
 }
 
-.checkbox-group input[type="checkbox"]:focus {
+input[type="checkbox"]:focus {
   border-color: var(--color-link);
   box-shadow: 0 0 0 2px rgba(100, 108, 255, 0.2);
 }
 
-.checkbox-group input[type="checkbox"]:checked {
+input[type="checkbox"]:checked {
   border-color: var(--color-text-primary);
 }
 
-.checkbox-group input[type="checkbox"]:checked::after {
+input[type="checkbox"]:checked::after {
   content: '';
   display: block;
   width: 0.35rem;
@@ -419,7 +419,7 @@
 .attribute-values input,
 .skill-row input,
 .points-row input {
-  width: 60px;
+  width: 2em;
   padding: 0.25rem;
   border: 1px solid var(--color-border);
   border-radius: 4px;
@@ -576,20 +576,23 @@ input[type="range"].points-input {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  width:100%;
 }
 
 .equipment-item {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr 2fr auto;
-  gap: 0.5rem;
+  display: flex;
+  flex-direction: row;
   align-items: center;
   padding: 0.5rem;
   background-color: var(--color-bg-secondary);
   border-radius: 4px;
-  border: 1px solid var(--color-border);
+  border-bottom: 1px dotted var(--color-bg-input);
+  flex-wrap:wrap;
+  justify-content: space-between;
+  position: relative;
 }
 
-.equipment-item input,
+/* .equipment-item input,
 .equipment-item select {
   padding: 0.25rem;
   border: 1px solid var(--color-border);
@@ -602,6 +605,24 @@ input[type="range"].points-input {
 .equipment-item select:focus {
   border-color: var(--color-link);
   outline: none;
+} */
+
+.equipment-item .input-group {
+  flex-direction: column;
+  width: fit-content;
+}
+
+.equipment-item .input-group label {
+  font-weight: bold;
+  color: var(--color-text-primary);
+  width: 100%;
+  text-align: center;
+  font-size: smaller;
+  min-width: 2em;
+}
+
+.equipment-item .input-group input[type="number"] {
+  width: 2em;
 }
 
 .add-button {
@@ -627,6 +648,10 @@ input[type="range"].points-input {
   border-radius: 4px;
   cursor: pointer;
   transition: opacity 0.2s;
+  align-self:baseline;
+  position: absolute;
+  right: 0;
+  top: 0;
 }
 
 .remove-button:hover {
@@ -726,12 +751,18 @@ input[type="range"].points-input {
   align-items: center;
   padding: 0.5rem;
   border-radius: 4px;
-  border: 1px solid var(--color-border);
+  gap: 1rem;
 }
 
-.attribute-item label {
+.attribute-item label, .skill-row label {
   font-weight: bold;
   color: var(--color-text-primary);
+  width: 5em;
+  text-align: left;
+}
+
+.skill-row label {
+  width: 8em;
 }
 
 .attribute-item input[type="number"] {

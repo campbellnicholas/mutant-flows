@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import type { Weapon, Armor, Range, GearItem } from '../types/character';
+import type { Weapon, Armor, Range, GearItem, ArmorType } from '../types/character';
 import { v4 as uuidv4 } from 'uuid';
 
 type EquipmentSectionProps = {
@@ -13,6 +13,7 @@ type EquipmentSectionProps = {
 };
 
 const RANGES: Range[] = ['Arm\'s Length', 'Near', 'Short', 'Long'];
+const ARMOR_TYPES: ArmorType[] = ['Damage', 'Rot'];
 
 export const EquipmentSection: React.FC<EquipmentSectionProps> = ({
   weapons,
@@ -33,6 +34,7 @@ export const EquipmentSection: React.FC<EquipmentSectionProps> = ({
       name: '',
       bonus: 0,
       damage: 0,
+      weight: 0,
       range: 'Arm\'s Length',
       specialNotes: '',
     };
@@ -56,7 +58,10 @@ export const EquipmentSection: React.FC<EquipmentSectionProps> = ({
       id: uuidv4(),
       name: '',
       rating: 0,
-      condition: 10,
+      weight: 0,
+      type: 'Damage',
+      worn: false,
+      specialNotes: '',
     };
     onArmorChange([...armor, newArmor]);
   };
@@ -118,42 +123,73 @@ export const EquipmentSection: React.FC<EquipmentSectionProps> = ({
         <button onClick={addWeapon} className="add-button">+ Add Weapon</button>
         {weapons.map(weapon => (
           <div key={weapon.id} className="equipment-item">
-            <input
-              type="text"
-              value={weapon.name}
-              onChange={(e) => updateWeapon(weapon.id, 'name', e.target.value)}
-              placeholder="Weapon Name"
-            />
-            <input
-              type="number"
-              value={weapon.bonus}
-              onChange={(e) => updateWeapon(weapon.id, 'bonus', parseInt(e.target.value) || 0)}
-              min="0"
-              max="6"
-              placeholder="Bonus"
-            />
-            <input
-              type="number"
-              value={weapon.damage}
-              onChange={(e) => updateWeapon(weapon.id, 'damage', parseInt(e.target.value) || 0)}
-              min="0"
-              placeholder="Damage"
-            />
-            <select
-              value={weapon.range}
-              onChange={(e) => updateWeapon(weapon.id, 'range', e.target.value as Range)}
-            >
-              {RANGES.map(range => (
-                <option key={range} value={range}>{range}</option>
-              ))}
-            </select>
-            <input
-              type="text"
-              value={weapon.specialNotes || ''}
-              onChange={(e) => updateWeapon(weapon.id, 'specialNotes', e.target.value)}
-              placeholder="Special Notes"
-            />
-            <button onClick={() => removeWeapon(weapon.id)} className="remove-button">×</button>
+            <div className="input-group">
+              <label htmlFor={`weapon-name-${weapon.id}`}>Weapon Name</label>
+              <input
+                id={`weapon-name-${weapon.id}`}
+                type="text"
+                value={weapon.name}
+                onChange={(e) => updateWeapon(weapon.id, 'name', e.target.value)}
+                placeholder="Weapon Name"
+              />
+            </div>
+            <div className="input-group">
+              <label htmlFor={`weapon-bonus-${weapon.id}`}>Bonus</label>
+              <input
+                id={`weapon-bonus-${weapon.id}`}
+                type="number"
+                value={weapon.bonus}
+                onChange={(e) => updateWeapon(weapon.id, 'bonus', parseInt(e.target.value) || 0)}
+                min="0"
+                max="6"
+                placeholder="Bonus"
+              />
+            </div>
+            <div className="input-group">
+              <label htmlFor={`weapon-damage-${weapon.id}`}>Damage</label>
+              <input
+                id={`weapon-damage-${weapon.id}`}
+                type="number"
+                value={weapon.damage}
+                onChange={(e) => updateWeapon(weapon.id, 'damage', parseInt(e.target.value) || 0)}
+                min="0"
+                placeholder="Damage"
+              />
+            </div>
+            <div className="input-group">
+              <label htmlFor={`weapon-weight-${weapon.id}`}>Weight</label>
+              <input
+                id={`weapon-weight-${weapon.id}`}
+                type="number"
+                value={weapon.weight}
+                onChange={(e) => updateWeapon(weapon.id, 'weight', parseInt(e.target.value) || 0)}
+                min="0"
+                placeholder="Weight"
+              />
+            </div>
+            <div className="input-group">
+              <label htmlFor={`weapon-range-${weapon.id}`}>Range</label>
+              <select
+                id={`weapon-range-${weapon.id}`}
+                value={weapon.range}
+                onChange={(e) => updateWeapon(weapon.id, 'range', e.target.value as Range)}
+              >
+                {RANGES.map(range => (
+                  <option key={range} value={range}>{range}</option>
+                ))}
+              </select>
+            </div>
+            <div className="input-group">
+              <label htmlFor={`weapon-special-notes-${weapon.id}`}>Special Notes</label>
+              <input
+                id={`weapon-special-notes-${weapon.id}`}
+                type="text"
+                value={weapon.specialNotes || ''}
+                onChange={(e) => updateWeapon(weapon.id, 'specialNotes', e.target.value)}
+                placeholder="Special Notes"
+              />
+            </div>
+            <button onClick={() => removeWeapon(weapon.id)} className="remove-button">&times;</button>
           </div>
         ))}
       </div>
@@ -179,13 +215,33 @@ export const EquipmentSection: React.FC<EquipmentSectionProps> = ({
             />
             <input
               type="number"
-              value={item.condition}
-              onChange={(e) => updateArmor(item.id, 'condition', parseInt(e.target.value) || 0)}
+              value={item.weight}
+              onChange={(e) => updateArmor(item.id, 'weight', parseInt(e.target.value) || 0)}
               min="0"
               max="10"
-              placeholder="Condition"
+              placeholder="Weight"
             />
-            <button onClick={() => removeArmor(item.id)} className="remove-button">×</button>
+            <select
+                id={`armor-type-${item.id}`}
+                value={item.type}
+                onChange={(e) => updateArmor(item.id, 'type', e.target.value as ArmorType)}
+              >
+                {ARMOR_TYPES.map(type => (
+                  <option key={type} value={type}>{type}</option>
+                ))}
+              </select>
+              <input
+                id={`armor-special-notes-${item.id}`}
+                type="text"
+                value={item.specialNotes || ''}
+                onChange={(e) => updateArmor(item.id, 'specialNotes', e.target.value)}
+                placeholder="Special Notes"
+              />
+              <input type="checkbox"
+                checked={item.worn}
+                onChange={(e) => updateArmor(item.id, 'worn', e.target.checked)}
+              />
+            <button onClick={() => removeArmor(item.id)} className="remove-button">&times;</button>
           </div>
         ))}
       </div>

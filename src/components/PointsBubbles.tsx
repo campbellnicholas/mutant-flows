@@ -1,20 +1,19 @@
 import React, { useCallback, useMemo } from 'react';
-import type { Character } from '../types/character';
 
 type PointsBubblesProps = {
   bubblesValue: number | null;
   bubblesMin: number;
   bubblesMax: number;
   bubblesFieldLabel: string;
-  bubblesSetCharacter: React.Dispatch<React.SetStateAction<Character>>;
-  bubblesField: keyof Character;
+  bubblesSetCharacter: (value: number) => void;
+  bubblesField: string;
 };
 
 const renderPointsBubbles = (
   value: number,
   max: number,
-  setCharacter: React.Dispatch<React.SetStateAction<Character>>,
-  field: keyof Character,
+  setCharacter: (value: number) => void,
+  field: string,
   onKeyPress: (value: number) => void
 ) => (
   <div 
@@ -24,10 +23,11 @@ const renderPointsBubbles = (
   >
     <div
       className={`points-bubble x-bubble ${value === 0 ? 'filled' : ''}`}
-      onClick={() => setCharacter(prev => ({
-        ...prev,
-        [field]: 0
-      }))}
+      onClick={() => {
+        console.log('X bubble clicked');
+        console.log('Field:', field);
+        setCharacter(0);
+      }}
       onKeyPress={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
@@ -43,10 +43,11 @@ const renderPointsBubbles = (
       <div
         key={i}
         className={`points-bubble ${i < value ? 'filled' : ''}`}
-        onClick={() => setCharacter(prev => ({
-          ...prev,
-          [field]: i + 1
-        }))}
+        onClick={() => {
+          console.log(`Bubble ${i + 1} clicked`);
+          console.log('Field:', field);
+          setCharacter(i + 1);
+        }}
         onKeyPress={(e) => {
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
@@ -81,11 +82,10 @@ export const PointsBubbles: React.FC<PointsBubblesProps> = ({
   const filledBubbles = Math.floor(boundedValue);
 
   const handleKeyPress = useCallback((newValue: number) => {
+    console.log('handleKeyPress called with:', newValue);
+    console.log('bubblesField:', bubblesField);
     const boundedNewValue = Math.max(bubblesMin, Math.min(bubblesMax, newValue));
-    bubblesSetCharacter(prev => ({
-      ...prev,
-      [bubblesField]: boundedNewValue
-    }));
+    bubblesSetCharacter(boundedNewValue);
   }, [bubblesMin, bubblesMax, bubblesSetCharacter, bubblesField]);
 
   const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {

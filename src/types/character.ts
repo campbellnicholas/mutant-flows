@@ -51,15 +51,21 @@ export type Weapon = {
   name: string;
   bonus: number;
   damage: number;
+  weight: number;
   range: Range;
   specialNotes?: string;
 };
+
+export type ArmorType = 'Damage' | 'Rot';
 
 export type Armor = {
   id: string;
   name: string;
   rating: number;
-  condition: number; // 0-10, representing current condition
+  weight: number;
+  type: ArmorType;
+  specialNotes?: string;
+  worn: boolean;
 };
 
 export type RotSuit = {
@@ -79,7 +85,15 @@ export type Skill =
   | 'Know the Zone'
   | 'Sense Emotion'
   | 'Manipulate'
-  | 'Heal';
+  | 'Heal'
+  | 'Intimidate'
+  | 'Jury Rig'
+  | 'Find the Path'
+  | 'Make a Deal'
+  | 'Sic a Dog'
+  | 'Inspire'
+  | 'Command'
+  | 'Shake It Off';
 
 export type Appearance = {
   face: string;
@@ -108,41 +122,40 @@ export type Character = {
   mutationPoints: number;
 };
 
-export const createEmptyCharacter = (): Character => ({
-  name: '',
-  role: 'Gearhead',
-  appearance: {
-    face: '',
-    body: '',
-    clothing: ''
-  },
-  attributes: {
-    strength: { name: 'strength', value: 0, trauma: { value: 0 }, traumaName: 'Damage' },
-    agility: { name: 'agility', value: 0, trauma: { value: 0 }, traumaName: 'Fatigue' },
-    wits: { name: 'wits', value: 0, trauma: { value: 0 }, traumaName: 'Confusion' },
-    empathy: { name: 'empathy', value: 0, trauma: { value: 0 }, traumaName: 'Doubt' },
-  },
-  skills: {
-    Endure: 0,
-    Force: 0,
-    Fight: 0,
-    Sneak: 0,
-    Move: 0,
-    Shoot: 0,
-    Scout: 0,
-    Comprehend: 0,
-    'Know the Zone': 0,
-    'Sense Emotion': 0,
-    Manipulate: 0,
-    Heal: 0,
-  },
-  weapons: [],
-  armor: [],
-  gear: [],
-  experiencePoints: 0,
-  rotPoints: 0,
-  mutationPoints: 0,
-});
+export const createEmptyCharacter = (): Character => {
+  // Initialize all skills with 0
+  const allSkills = getBaseSkills().reduce((acc, skill) => ({
+    ...acc,
+    [skill]: 0
+  }), {} as Record<Skill, number>);
+  
+  // Add specialist skill
+  const specialistSkill = getSpecialistSkillForRole('Gearhead'); // Default role
+  allSkills[specialistSkill] = 1; // Specialist skills start at 1
+  
+  return {
+    name: '',
+    role: 'Gearhead',
+    appearance: {
+      face: '',
+      body: '',
+      clothing: ''
+    },
+    attributes: {
+      strength: { name: 'strength', value: 0, trauma: { value: 0 }, traumaName: 'Damage' },
+      agility: { name: 'agility', value: 0, trauma: { value: 0 }, traumaName: 'Fatigue' },
+      wits: { name: 'wits', value: 0, trauma: { value: 0 }, traumaName: 'Confusion' },
+      empathy: { name: 'empathy', value: 0, trauma: { value: 0 }, traumaName: 'Doubt' },
+    },
+    skills: allSkills,
+    weapons: [],
+    armor: [],
+    gear: [],
+    experiencePoints: 0,
+    rotPoints: 0,
+    mutationPoints: 0,
+  };
+};
 
 // Default values for new characters
 export const defaultAttributes: Attribute[] = [
@@ -167,16 +180,33 @@ export const defaultBaseSkills: BaseSkill[] = [
   { name: 'Heal', attribute: 'Empathy', value: 0 },
 ];
 
-export const getSpecialistSkillForRole = (role: Role): SpecialistSkill => {
-  const specialistSkills: Record<Role, SpecialistSkill> = {
-    'Enforcer': { name: 'Intimidate', role: 'Enforcer', attribute: 'Strength', value: 1 },
-    'Gearhead': { name: 'Jury Rig', role: 'Gearhead', attribute: 'Wits', value: 1 },
-    'Stalker': { name: 'Find the Path', role: 'Stalker', attribute: 'Agility', value: 1 },
-    'Fixer': { name: 'Make a Deal', role: 'Fixer', attribute: 'Empathy', value: 1 },
-    'Dog Handler': { name: 'Sic a Dog', role: 'Dog Handler', attribute: 'Agility', value: 1 },
-    'Chronicler': { name: 'Inspire', role: 'Chronicler', attribute: 'Empathy', value: 1 },
-    'Boss': { name: 'Command', role: 'Boss', attribute: 'Wits', value: 1 },
-    'Grunt': { name: 'Shake It Off', role: 'Grunt', attribute: 'Strength', value: 1 },
+// Helper function to get all base skills
+export const getBaseSkills = (): Skill[] => [
+  'Endure',
+  'Force',
+  'Fight',
+  'Sneak',
+  'Move',
+  'Shoot',
+  'Scout',
+  'Comprehend',
+  'Know the Zone',
+  'Sense Emotion',
+  'Manipulate',
+  'Heal'
+];
+
+// Helper function to get specialist skill for a role
+export const getSpecialistSkillForRole = (role: Role): Skill => {
+  const specialistSkills: Record<Role, Skill> = {
+    'Enforcer': 'Intimidate',
+    'Gearhead': 'Jury Rig',
+    'Stalker': 'Find the Path',
+    'Fixer': 'Make a Deal',
+    'Dog Handler': 'Sic a Dog',
+    'Chronicler': 'Inspire',
+    'Boss': 'Command',
+    'Grunt': 'Shake It Off'
   };
   return specialistSkills[role];
 }; 
