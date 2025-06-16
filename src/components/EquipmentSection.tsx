@@ -199,12 +199,17 @@ export const EquipmentSection: React.FC<EquipmentSectionProps> = ({
         <button onClick={addArmor} className="add-button">+ Add Armor</button>
         {armor.map(item => (
           <div key={item.id} className="equipment-item">
+            <div className="input-group">
+              <label htmlFor={`armor-name-${item.id}`}>Armor Name</label>
             <input
               type="text"
               value={item.name}
               onChange={(e) => updateArmor(item.id, 'name', e.target.value)}
               placeholder="Armor Name"
             />
+            </div>
+            <div className="input-group">
+              <label htmlFor={`armor-rating-${item.id}`}>Rating</label>
             <input
               type="number"
               value={item.rating}
@@ -213,6 +218,9 @@ export const EquipmentSection: React.FC<EquipmentSectionProps> = ({
               max="6"
               placeholder="Rating"
             />
+            </div>
+            <div className="input-group">
+              <label htmlFor={`armor-weight-${item.id}`}>Weight</label>
             <input
               type="number"
               value={item.weight}
@@ -221,6 +229,9 @@ export const EquipmentSection: React.FC<EquipmentSectionProps> = ({
               max="10"
               placeholder="Weight"
             />
+            </div>
+            <div className="input-group">
+              <label htmlFor={`armor-type-${item.id}`}>Type</label>
             <select
                 id={`armor-type-${item.id}`}
                 value={item.type}
@@ -230,6 +241,9 @@ export const EquipmentSection: React.FC<EquipmentSectionProps> = ({
                   <option key={type} value={type}>{type}</option>
                 ))}
               </select>
+            </div>
+            <div className="input-group">
+              <label htmlFor={`armor-special-notes-${item.id}`}>Special Notes</label>
               <input
                 id={`armor-special-notes-${item.id}`}
                 type="text"
@@ -237,10 +251,14 @@ export const EquipmentSection: React.FC<EquipmentSectionProps> = ({
                 onChange={(e) => updateArmor(item.id, 'specialNotes', e.target.value)}
                 placeholder="Special Notes"
               />
+            </div>
+            <div className="input-group armor-worn">
+              <label htmlFor={`armor-worn-${item.id}`}>Worn?</label>
               <input type="checkbox"
                 checked={item.worn}
                 onChange={(e) => updateArmor(item.id, 'worn', e.target.checked)}
               />
+            </div>
             <button onClick={() => removeArmor(item.id)} className="remove-button">&times;</button>
           </div>
         ))}

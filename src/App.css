@@ -582,7 +582,7 @@ input[type="range"].points-input {
 .equipment-item {
   display: flex;
   flex-direction: row;
-  align-items: center;
+  align-items: flex-start;
   padding: 0.5rem;
   background-color: var(--color-bg-secondary);
   border-radius: 4px;
@@ -623,6 +623,10 @@ input[type="range"].points-input {
 
 .equipment-item .input-group input[type="number"] {
   width: 2em;
+}
+
+.input-group.armor-worn {
+  margin-right: 2em;
 }
 
 .add-button {
