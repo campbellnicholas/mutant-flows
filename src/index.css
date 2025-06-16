@@ -7,6 +7,7 @@
   --color-text-primary: #213547;
   --color-text-secondary: rgba(255, 255, 255, 0.87);
   --color-text-light: rgba(255, 255, 255, 0.87);
+  --color-text-dark: #213547;
   --color-link: #646cff;
   --color-link-hover: #535bf2;
   --color-link-hover-light: #747bff;
@@ -17,6 +18,8 @@
   --color-bg-button-warning: #f44336;
   --color-bg-input: #cacaca;
   --color-border-focus: -webkit-focus-ring-color;
+  --color-bg-light-glow: rgba(255, 255, 255, 0.2);
+  --color-bg-modal: #fff;
 
   color: var(--color-text-primary);
   background-color: var(--color-bg-primary);
@@ -41,6 +44,7 @@
   --color-bg-button-warning: #c62828;
   --color-bg-input: #23272a;
   --color-border-focus: #8faaff;
+  --color-bg-modal: #23272a;
 }
 
 a {
