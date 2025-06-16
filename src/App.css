@@ -433,6 +433,44 @@ input[type="checkbox"]:checked::after {
   background-color: var(--color-bg-secondary);
   border-radius: 4px;
   margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+  position: relative;
+  border: 2px solid transparent;
+}
+
+.gear-item input[disabled] {
+  opacity: 0.7;
+  background-color: var(--color-bg-input);
+  cursor: not-allowed;
+}
+
+.gear-type {
+  color: var(--color-text-secondary);
+  font-size: smaller;
+  font-style: italic;
+  margin-left: auto;
+}
+
+.gear-item.gear-worn {
+  border: 2px solid var(--color-bg-info);
+  border-radius: 4px;
+}
+
+.gear-exception {
+  color: var(--color-text-light);
+  background-color: var(--color-bg-info);
+  font-size: 67%;
+  text-transform: uppercase;
+  font-style: italic;
+  font-weight: bold;
+  padding: 0 0.25rem;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+
+.gear-exception:empty {
+  display: none;
 }
 
 .gear-item button {
@@ -552,6 +590,21 @@ input[type="range"].points-input {
 .points-bubble.x-bubble.filled::before,
 .points-bubble.x-bubble.filled::after {
   background-color: var(--color-text-light);
+}
+
+.points-bubble.disabled {
+  border-style: dotted;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.points-bubble.disabled:hover {
+  transform: none;
+}
+
+.points-bubble.disabled.filled {
+  background-color: transparent;
+  border-color: var(--color-border);
 }
 
 .points-value {

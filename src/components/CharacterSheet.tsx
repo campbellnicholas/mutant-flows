@@ -66,26 +66,6 @@ export const CharacterSheet: React.FC = () => {
     localStorage.setItem('character', JSON.stringify(character));
   }, [character]);
 
-  const handleSkillChange = (skill: Skill, value: number) => {
-    setCharacter(prev => ({
-      ...prev,
-      skills: {
-        ...prev.skills,
-        [skill]: value
-      }
-    }));
-  };
-
-  const updateAppearance = (field: keyof Character['appearance'], value: string) => {
-    setCharacter(prev => ({
-      ...prev,
-      appearance: {
-        ...prev.appearance,
-        [field]: value
-      }
-    }));
-  };
-
   const getTraumaLabel = (attributeName: keyof Character['attributes']): string => {
     switch (attributeName) {
       case 'strength': return 'Damage';
@@ -108,6 +88,16 @@ export const CharacterSheet: React.FC = () => {
             value
           }
         }
+      }
+    }));
+  };
+
+  const updateAppearance = (field: keyof Character['appearance'], value: string) => {
+    setCharacter(prev => ({
+      ...prev,
+      appearance: {
+        ...prev.appearance,
+        [field]: value
       }
     }));
   };
@@ -194,6 +184,19 @@ export const CharacterSheet: React.FC = () => {
                     value={attribute.value}
                     onChange={(e) => {
                       const inputValue = e.target.value;
+                      setCharacter(prev => ({
+                        ...prev,
+                        attributes: {
+                          ...prev.attributes,
+                          [attrKey as keyof typeof character.attributes]: {
+                            ...prev.attributes[attrKey as keyof typeof character.attributes],
+                            value: inputValue === '' ? null : parseInt(inputValue)
+                          }
+                        }
+                      }));
+                    }}
+                    onBlur={(e) => {
+                      const inputValue = e.target.value;
                       const parsedValue = inputValue === '' ? 0 : parseInt(inputValue);
                       setCharacter(prev => ({
                         ...prev,
@@ -201,16 +204,16 @@ export const CharacterSheet: React.FC = () => {
                           ...prev.attributes,
                           [attrKey as keyof typeof character.attributes]: {
                             ...prev.attributes[attrKey as keyof typeof character.attributes],
-                            value: parsedValue
+                            value: isNaN(parsedValue) || parsedValue < 0 ? 0 : parsedValue
                           }
                         }
                       }));
                     }}
                   />
                   <PointsBubbles 
-                    bubblesValue={trauma.value} 
+                    bubblesValue={attribute.value === null ? null : trauma.value} 
                     bubblesMin={0} 
-                    bubblesMax={attribute.value} 
+                    bubblesMax={attribute.value === null ? 0 : attribute.value} 
                     bubblesFieldLabel={attribute.traumaName || getTraumaLabel(attrKey as keyof Character['attributes'])} 
                     bubblesSetCharacter={(value: number) => updateTraumaValue(attrKey as keyof Character['attributes'], value)} 
                     bubblesField={`${attribute.traumaName}Points`} 
@@ -232,9 +235,27 @@ export const CharacterSheet: React.FC = () => {
               <input
                 type="number"
                 value={character.skills[skill] ?? 0}
-                onChange={(e) => handleSkillChange(skill, parseInt(e.target.value) || 0)}
-                min="0"
-                max="5"
+                onChange={(e) => {
+                  const inputValue = e.target.value;
+                  setCharacter(prev => ({
+                    ...prev,
+                    skills: {
+                      ...prev.skills,
+                      [skill]: inputValue === '' ? '' : parseInt(inputValue)
+                    }
+                  }));
+                }}
+                onBlur={(e) => {
+                  const inputValue = e.target.value;
+                  const parsedValue = inputValue === '' ? 0 : parseInt(inputValue);
+                  setCharacter(prev => ({
+                    ...prev,
+                    skills: {
+                      ...prev.skills,
+                      [skill]: isNaN(parsedValue) || parsedValue < 0 ? 0 : parsedValue
+                    }
+                  }));
+                }}
               />
             </div>
           ))}
@@ -245,9 +266,27 @@ export const CharacterSheet: React.FC = () => {
             <input
               type="number"
               value={character.skills[getSpecialistSkillForRole(character.role)] ?? 1}
-              onChange={(e) => handleSkillChange(getSpecialistSkillForRole(character.role), parseInt(e.target.value) || 0)}
-              min="1"
-              max="5"
+              onChange={(e) => {
+                const inputValue = e.target.value;
+                setCharacter(prev => ({
+                  ...prev,
+                  skills: {
+                    ...prev.skills,
+                    [getSpecialistSkillForRole(character.role)]: inputValue === '' ? '' : parseInt(inputValue)
+                  }
+                }));
+              }}
+              onBlur={(e) => {
+                const inputValue = e.target.value;
+                const parsedValue = inputValue === '' ? 1 : parseInt(inputValue);
+                setCharacter(prev => ({
+                  ...prev,
+                  skills: {
+                    ...prev.skills,
+                    [getSpecialistSkillForRole(character.role)]: isNaN(parsedValue) || parsedValue < 1 ? 1 : parsedValue
+                  }
+                }));
+              }}
             />
           </div>
         </div>

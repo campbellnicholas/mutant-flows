@@ -22,6 +22,7 @@
   --color-primary-hover: #535bf2;
   --color-error: #f44336;
   --color-success: #4caf50;
+  --color-bg-info: #4B8088;
 
   color: var(--color-text-primary);
   background-color: var(--color-bg-primary);

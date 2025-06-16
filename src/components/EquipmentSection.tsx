@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import type { Weapon, Armor, Range, GearItem, ArmorType } from '../types/character';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -24,10 +24,6 @@ export const EquipmentSection: React.FC<EquipmentSectionProps> = ({
   onArmorChange,
   onGearChange
 }) => {
-  const [newGearName, setNewGearName] = useState('');
-  const [newGearWeight, setNewGearWeight] = useState(1);
-  const [newGearIsTiny, setNewGearIsTiny] = useState(false);
-
   const addWeapon = () => {
     const newWeapon: Weapon = {
       id: uuidv4(),
@@ -79,19 +75,14 @@ export const EquipmentSection: React.FC<EquipmentSectionProps> = ({
   };
 
   const addGearItem = () => {
-    if (!newGearName.trim()) return;
-
     const newItem: GearItem = {
       id: Date.now().toString(),
-      name: newGearName.trim(),
-      weight: newGearWeight,
-      isTiny: newGearIsTiny
+      name: '',
+      weight: 1,
+      isTiny: false
     };
 
     onGearChange([...(gear || []), newItem]);
-    setNewGearName('');
-    setNewGearWeight(1);
-    setNewGearIsTiny(false);
   };
 
   const updateGearItem = (id: string, updates: Partial<GearItem>) => {
@@ -111,7 +102,8 @@ export const EquipmentSection: React.FC<EquipmentSectionProps> = ({
       return sum;
     }
     return sum + item.weight;
-  }, 0);
+  }, 0) + weapons.reduce((sum, weapon) => sum + weapon.weight, 0) + 
+    armor.reduce((sum, item) => item.worn ? sum : sum + item.weight, 0);
 
   const maxWeight = strength * 2;
   const isEncumbered = totalWeight > maxWeight;
@@ -274,53 +266,106 @@ export const EquipmentSection: React.FC<EquipmentSectionProps> = ({
           </div>
         </div>
 
-        <div className="add-gear-form">
-          <input
-            type="text"
-            value={newGearName}
-            onChange={(e) => setNewGearName(e.target.value)}
-            placeholder="Gear name"
-          />
-          <input
-            type="number"
-            value={newGearWeight}
-            onChange={(e) => setNewGearWeight(Math.max(1, parseInt(e.target.value) || 1))}
-            min="1"
-          />
-          <label className="tiny-checkbox">
-            <input
-              type="checkbox"
-              checked={newGearIsTiny}
-              onChange={(e) => setNewGearIsTiny(e.target.checked)}
-            />
-            Tiny Item
-          </label>
-          <button onClick={addGearItem}>Add Gear</button>
-        </div>
-
         <div className="gear-list">
+          {weapons.map((weapon) => (
+            <div key={`weapon-${weapon.id}`} className="gear-item">
+              <div className="input-group">
+                <label htmlFor={`gear-weapon-name-${weapon.id}`}>Name</label>
+                <input
+                  id={`gear-weapon-name-${weapon.id}`}
+                  type="text"
+                  value={weapon.name}
+                  disabled
+                />
+              </div>
+              <div className="input-group">
+                <label htmlFor={`gear-weapon-weight-${weapon.id}`}>Weight</label>
+                <input
+                  id={`gear-weapon-weight-${weapon.id}`}
+                  type="number"
+                  value={weapon.weight}
+                  disabled
+                />
+              </div>
+              <div className="input-group">
+                <label htmlFor={`gear-weapon-tiny-${weapon.id}`}>Tiny</label>
+                <input
+                  id={`gear-weapon-tiny-${weapon.id}`}
+                  type="checkbox"
+                  checked={false}
+                  disabled
+                />
+              </div>
+              <span className="gear-type">Weapon</span>
+            </div>
+          ))}
+
+          {armor.map((item) => (
+            <div key={`armor-${item.id}`} className={`gear-item${item.worn ? ' gear-worn' : ''}`}>
+              <div className="input-group">
+                <label htmlFor={`gear-armor-name-${item.id}`}>Name</label>
+                <input
+                  id={`gear-armor-name-${item.id}`}
+                  type="text"
+                  value={item.name}
+                  disabled
+                />
+              </div>
+              <div className="input-group">
+                <label htmlFor={`gear-armor-weight-${item.id}`}>Weight</label>
+                <input
+                  id={`gear-armor-weight-${item.id}`}
+                  type="number"
+                  value={item.weight}
+                  disabled
+                />
+              </div>
+              <div className="input-group">
+                <label htmlFor={`gear-armor-tiny-${item.id}`}>Tiny</label>
+                <input
+                  id={`gear-armor-tiny-${item.id}`}
+                  type="checkbox"
+                  checked={false}
+                  disabled
+                />
+              </div>
+              <span className="gear-type">Armor</span>
+              <span className="gear-exception">{item.worn ? 'WEARING' : ''}</span>
+            </div>
+          ))}
+
           {(gear || []).map((item) => (
             <div key={item.id} className="gear-item">
-              <input
-                type="text"
-                value={item.name}
-                onChange={(e) => updateGearItem(item.id, { name: e.target.value })}
-              />
-              <input
-                type="number"
-                value={item.weight}
-                onChange={(e) => updateGearItem(item.id, { weight: Math.max(1, parseInt(e.target.value) || 1) })}
-                min="1"
-              />
-              <label className="tiny-checkbox">
+              <div className="input-group">
+                <label htmlFor={`gear-name-${item.id}`}>Name</label>
                 <input
+                  id={`gear-name-${item.id}`}
+                  type="text"
+                  value={item.name}
+                  onChange={(e) => updateGearItem(item.id, { name: e.target.value })}
+                  placeholder="Gear name"
+                />
+              </div>
+              <div className="input-group">
+                <label htmlFor={`gear-weight-${item.id}`}>Weight</label>
+                <input
+                  id={`gear-weight-${item.id}`}
+                  type="number"
+                  value={item.weight}
+                  onChange={(e) => updateGearItem(item.id, { weight: Math.max(1, parseInt(e.target.value) || 1) })}
+                  min="1"
+                />
+              </div>
+              <div className="input-group">
+                <label htmlFor={`gear-tiny-${item.id}`}>Tiny</label>
+                <input
+                  id={`gear-tiny-${item.id}`}
                   type="checkbox"
                   checked={item.isTiny}
                   onChange={(e) => updateGearItem(item.id, { isTiny: e.target.checked })}
                 />
-                Tiny
-              </label>
-              <button onClick={() => removeGearItem(item.id)}>Remove</button>
+              </div>
+              <button onClick={() => removeGearItem(item.id)} className="remove-button">&times;</button>
             </div>
           ))}
         </div>
