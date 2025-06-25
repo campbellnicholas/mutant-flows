@@ -15,18 +15,18 @@
 }
 
 .die-green {
-  background: #4CAF50;
-  color: white;
+  background: var(--color-die-green);
+  color: var(--color-text-light);
 }
 
 .die-yellow {
-  background: #FFC107;
-  color: #333;
+  background: var(--color-die-yellow);
+  color: var(--color-die-black);
 }
 
 .die-black {
-  background: #333;
-  color: white;
+  background: var(--color-die-black);
+  color: var(--color-text-light);
 }
 
 .die-inner {
