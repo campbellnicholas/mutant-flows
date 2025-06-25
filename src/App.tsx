@@ -6,9 +6,10 @@ import './App.css'
 
 function App() {
   const [activeTab, setActiveTab] = useState<'skills' | 'rot'>('skills')
-  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+  const [theme, setTheme] = useState<'light' | 'dark' | 'dystopian'>(() => {
     if (typeof window !== 'undefined') {
-      return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+      const savedTheme = document.documentElement.getAttribute('data-theme');
+      return (savedTheme === 'dark' || savedTheme === 'dystopian') ? savedTheme : 'light';
     }
     return 'light';
   });
@@ -18,7 +19,29 @@ function App() {
   }, [theme])
 
   const toggleTheme = () => {
-    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'))
+    setTheme((prev) => {
+      switch (prev) {
+        case 'light':
+          return 'dark';
+        case 'dark':
+          return 'dystopian';
+        case 'dystopian':
+          return 'light';
+        default:
+          return 'light';
+      }
+    })
+  }
+
+  const getThemeEmoji = () => {
+    switch (theme) {
+      case 'dark':
+        return '🌙';
+      case 'dystopian':
+        return '🧟';
+      default:
+        return '☀️';
+    }
   }
 
   return (
@@ -26,9 +49,9 @@ function App() {
       <button
         className="theme-toggle"
         onClick={toggleTheme}
-        aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+        aria-label={`Switch to ${theme === 'dark' ? 'light' : theme === 'light' ? 'dark' : 'light'} mode`}
       >
-        {theme === 'dark' ? '☀️' : '🌙'}
+        {getThemeEmoji()}
       </button>
       <TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />
       <div className="roller-container">
