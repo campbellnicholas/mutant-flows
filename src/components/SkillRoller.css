@@ -105,25 +105,26 @@
 }
 
 .dice-input-field-attribute {
-  background-color: var(--color-die-green);
-  color: var(--color-text-light);
-  border: 2px solid var(--color-die-green);
-}
-
-.dice-quantity-attribute > button {
-  background-color: var(--color-die-green);
-  color: var(--color-text-light);
-  opacity: 0.75;
-}
-
-.dice-input-field-skill {
   background-color: var(--color-die-yellow);
   color: var(--color-die-yellow-text);
   border: 2px solid var(--color-die-yellow);
 }
-.dice-quantity-skill > button {
+
+.dice-quantity-attribute > button {
   background-color: var(--color-die-yellow);
   color: var(--color-text-dark);
+  opacity: 0.75;
+}
+
+.dice-input-field-skill {
+  background-color: var(--color-die-green);
+  color: var(--color-text-light);
+  border: 2px solid var(--color-die-green);
+  
+}
+.dice-quantity-skill > button {
+  background-color: var(--color-die-green);
+  color: var(--color-text-light);
   opacity: 0.75;
 }
 

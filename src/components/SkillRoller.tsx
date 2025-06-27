@@ -103,6 +103,56 @@ const SkillRoller: React.FC = () => {
           <h4>{selectedSkill.name}</h4>
           <p>{selectedSkill.description}</p>
           <div className="dice-config">
+          <div className="dice-input">
+              <label>Skill Dice:</label>
+              <div className="quantity-control dice-quantity-skill">
+                <button
+                  type="button"
+                  aria-label="Decrement Skill Dice"
+                  onClick={() => {
+                    const newValue = Math.max(0, skillDice - 1);
+                    setSkillDice(newValue);
+                    setSkillDiceInput(newValue.toString());
+                  }}
+                >
+                  -
+                </button>
+                <input
+                  type="number"
+                  className="dice-input-field-skill"
+                  min="0"
+                  value={skillDiceInput}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setSkillDiceInput(value);
+                    if (value === '') {
+                      return;
+                    }
+                    const numValue = parseInt(value);
+                    if (!isNaN(numValue)) {
+                      setSkillDice(Math.max(0, numValue));
+                    }
+                  }}
+                  onBlur={(e) => {
+                    if (e.target.value === '') {
+                      setSkillDiceInput('0');
+                      setSkillDice(0);
+                    }
+                  }}
+                />
+                <button
+                  type="button"
+                  aria-label="Increment Skill Dice"
+                  onClick={() => {
+                    const newValue = skillDice + 1;
+                    setSkillDice(newValue);
+                    setSkillDiceInput(newValue.toString());
+                  }}
+                >
+                  +
+                </button>
+              </div>
+            </div>
             <div className="dice-input">
               <label>Attribute Dice ({selectedSkill.attribute}):</label>
               <div className="quantity-control dice-quantity-attribute">
@@ -147,56 +197,6 @@ const SkillRoller: React.FC = () => {
                     const newValue = attributeDice + 1;
                     setAttributeDice(newValue);
                     setAttributeDiceInput(newValue.toString());
-                  }}
-                >
-                  +
-                </button>
-              </div>
-            </div>
-            <div className="dice-input">
-              <label>Skill Dice:</label>
-              <div className="quantity-control dice-quantity-skill">
-                <button
-                  type="button"
-                  aria-label="Decrement Skill Dice"
-                  onClick={() => {
-                    const newValue = Math.max(0, skillDice - 1);
-                    setSkillDice(newValue);
-                    setSkillDiceInput(newValue.toString());
-                  }}
-                >
-                  -
-                </button>
-                <input
-                  type="number"
-                  className="dice-input-field-skill"
-                  min="0"
-                  value={skillDiceInput}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    setSkillDiceInput(value);
-                    if (value === '') {
-                      return;
-                    }
-                    const numValue = parseInt(value);
-                    if (!isNaN(numValue)) {
-                      setSkillDice(Math.max(0, numValue));
-                    }
-                  }}
-                  onBlur={(e) => {
-                    if (e.target.value === '') {
-                      setSkillDiceInput('0');
-                      setSkillDice(0);
-                    }
-                  }}
-                />
-                <button
-                  type="button"
-                  aria-label="Increment Skill Dice"
-                  onClick={() => {
-                    const newValue = skillDice + 1;
-                    setSkillDice(newValue);
-                    setSkillDiceInput(newValue.toString());
                   }}
                 >
                   +

@@ -14,14 +14,13 @@ A React-based dice roller for the Mutant: Year Zero tabletop roleplaying game. T
 
 ## Dice System
 
-- **Green Dice**: Base dice
+- **Green Dice**: Skill dice
+  - 6: Success
+- **Yellow Dice**: Attribute dice
   - 6: Success
   - 1: Failure
-- **Yellow Dice**: Skill dice
-  - 5-6: Success
-  - 1: Failure
 - **Black Dice**: Gear dice
-  - 5-6: Success
+  - 6: Success
   - 1: Failure + Broken Gear
 
 ## Usage
