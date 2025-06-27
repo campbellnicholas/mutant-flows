@@ -309,6 +309,7 @@
   -webkit-appearance: none;
   width: 1.2rem;
   height: 1.2rem;
+  aspect-ratio: 1/1;
   border: 1.5px solid var(--color-text-primary);
   border-radius: 50%;
   background-color: transparent;
