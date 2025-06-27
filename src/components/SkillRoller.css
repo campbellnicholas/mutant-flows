@@ -67,7 +67,7 @@
 
 .dice-config {
   display: flex;
-  gap: 1.5rem;
+  gap: 3rem;
   flex-wrap: wrap;
   justify-content: center;
   align-items: flex-end;
@@ -89,10 +89,12 @@
 
 .dice-input input {
   padding: 0.5rem;
-  border: 2px solid #ccc;
+  border: 2px solid var(--color-background-secondary);
   border-radius: 4px;
   font-size: 1rem;
-  width: 2rem;;
+  width: 2rem;
+  height: 2rem;
+  aspect-ratio: 1/1;
   text-align: center;
 }
 
@@ -104,8 +106,14 @@
 
 .dice-input-field-attribute {
   background-color: var(--color-die-green);
-  color: white;
+  color: var(--color-text-light);
   border: 2px solid var(--color-die-green);
+}
+
+.dice-quantity-attribute > button {
+  background-color: var(--color-die-green);
+  color: var(--color-text-light);
+  opacity: 0.75;
 }
 
 .dice-input-field-skill {
@@ -113,11 +121,22 @@
   color: var(--color-die-yellow-text);
   border: 2px solid var(--color-die-yellow);
 }
+.dice-quantity-skill > button {
+  background-color: var(--color-die-yellow);
+  color: var(--color-text-light);
+  opacity: 0.75;
+}
 
 .dice-input-field-gear {
   background-color: var(--color-die-black);
-  color: white;
+  color: var(--color-text-light);
   border: 2px solid var(--color-die-black);
+}
+
+.dice-quantity-gear > button {
+  background-color: var(--color-die-black);
+  color: var(--color-text-light);
+  opacity: 0.75;
 }
 
 .dice-input-field-attribute:focus,
@@ -125,6 +144,12 @@
 .dice-input-field-gear:focus {
   outline: none;
   box-shadow: 0 0 0 2px rgba(100, 108, 255, 0.2);
+}
+
+.dice-quantity-attribute > button:hover, 
+.dice-quantity-skill > button:hover, 
+.dice-quantity-gear > button:hover {
+  opacity: 1;
 }
 
 .available-stunts {

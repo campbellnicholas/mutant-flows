@@ -163,30 +163,56 @@ const RotRoller = () => {
       <div className="input-section">
         <div className="input-group">
           <label htmlFor="rotPoints">Current Rot Points:</label>
-          <input
-            type="number"
-            id="rotPoints"
-            min="1"
-            value={rotPointsInput}
-            onChange={(e) => {
-              const value = e.target.value;
-              setRotPointsInput(value);
-              if (value === '') {
-                return;
-              }
-              const numValue = parseInt(value);
-              if (!isNaN(numValue)) {
-                setRotPoints(Math.max(1, numValue));
-              }
-            }}
-            onBlur={(e) => {
-              if (e.target.value === '') {
-                setRotPointsInput('1');
-                setRotPoints(1);
+          <div className="quantity-control">
+            <button
+              type="button"
+              aria-label="Decrement Rot Points"
+              onClick={() => {
+                const newValue = Math.max(1, rotPoints - 1);
+                setRotPoints(newValue);
+                setRotPointsInput(newValue.toString());
                 handleResetRolls();
-              }
-            }}
-          />
+              }}
+            >
+              -
+            </button>
+            <input
+              type="number"
+              id="rotPoints"
+              min="1"
+              value={rotPointsInput}
+              onChange={(e) => {
+                const value = e.target.value;
+                setRotPointsInput(value);
+                if (value === '') {
+                  return;
+                }
+                const numValue = parseInt(value);
+                if (!isNaN(numValue)) {
+                  setRotPoints(Math.max(1, numValue));
+                }
+              }}
+              onBlur={(e) => {
+                if (e.target.value === '') {
+                  setRotPointsInput('1');
+                  setRotPoints(1);
+                  handleResetRolls();
+                }
+              }}
+            />
+            <button
+              type="button"
+              aria-label="Increment Rot Points"
+              onClick={() => {
+                const newValue = rotPoints + 1;
+                setRotPoints(newValue);
+                setRotPointsInput(newValue.toString());
+                handleResetRolls();
+              }}
+            >
+              +
+            </button>
+          </div>
         </div>
 
         <div className="protection-section">
@@ -221,38 +247,64 @@ const RotRoller = () => {
           {protection.hasRotSuit && (
             <div className="input-group">
               <label htmlFor="suitRating">Rot Suit Rating:</label>
-              <input
-                type="number"
-                id="suitRating"
-                min="1"
-                max="6"
-                value={protection.rotSuitRating}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  if (value === '') {
-                    setProtection(prev => ({
-                      ...prev,
-                      rotSuitRating: 3
-                    }));
-                  } else {
-                    const numValue = parseInt(value);
-                    if (!isNaN(numValue)) {
+              <div className="quantity-control">
+                <button
+                  type="button"
+                  aria-label="Decrement Rot Suit Rating"
+                  onClick={() => {
+                    setProtection(prev => {
+                      const newValue = Math.max(1, prev.rotSuitRating - 1);
+                      return { ...prev, rotSuitRating: newValue };
+                    });
+                  }}
+                >
+                  -
+                </button>
+                <input
+                  type="number"
+                  id="suitRating"
+                  min="1"
+                  max="6"
+                  value={protection.rotSuitRating}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value === '') {
                       setProtection(prev => ({
                         ...prev,
-                        rotSuitRating: Math.max(1, Math.min(6, numValue))
+                        rotSuitRating: 3
+                      }));
+                    } else {
+                      const numValue = parseInt(value);
+                      if (!isNaN(numValue)) {
+                        setProtection(prev => ({
+                          ...prev,
+                          rotSuitRating: Math.max(1, Math.min(6, numValue))
+                        }));
+                      }
+                    }
+                  }}
+                  onBlur={(e) => {
+                    if (e.target.value === '') {
+                      setProtection(prev => ({
+                        ...prev,
+                        rotSuitRating: 3
                       }));
                     }
-                  }
-                }}
-                onBlur={(e) => {
-                  if (e.target.value === '') {
-                    setProtection(prev => ({
-                      ...prev,
-                      rotSuitRating: 3
-                    }));
-                  }
-                }}
-              />
+                  }}
+                />
+                <button
+                  type="button"
+                  aria-label="Increment Rot Suit Rating"
+                  onClick={() => {
+                    setProtection(prev => {
+                      const newValue = Math.min(6, prev.rotSuitRating + 1);
+                      return { ...prev, rotSuitRating: newValue };
+                    });
+                  }}
+                >
+                  +
+                </button>
+              </div>
             </div>
           )}
         </div>

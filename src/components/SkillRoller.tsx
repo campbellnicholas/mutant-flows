@@ -105,81 +105,153 @@ const SkillRoller: React.FC = () => {
           <div className="dice-config">
             <div className="dice-input">
               <label>Attribute Dice ({selectedSkill.attribute}):</label>
-              <input
-                type="number"
-                className="dice-input-field-attribute"
-                min="0"
-                value={attributeDiceInput}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setAttributeDiceInput(value);
-                  if (value === '') {
-                    return;
-                  }
-                  const numValue = parseInt(value);
-                  if (!isNaN(numValue)) {
-                    setAttributeDice(Math.max(0, numValue));
-                  }
-                }}
-                onBlur={(e) => {
-                  if (e.target.value === '') {
-                    setAttributeDiceInput('0');
-                    setAttributeDice(0);
-                  }
-                }}
-              />
+              <div className="quantity-control dice-quantity-attribute">
+                <button
+                  type="button"
+                  aria-label="Decrement Attribute Dice"
+                  onClick={() => {
+                    const newValue = Math.max(0, attributeDice - 1);
+                    setAttributeDice(newValue);
+                    setAttributeDiceInput(newValue.toString());
+                  }}
+                >
+                  -
+                </button>
+                <input
+                  type="number"
+                  className="dice-input-field-attribute"
+                  min="0"
+                  value={attributeDiceInput}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setAttributeDiceInput(value);
+                    if (value === '') {
+                      return;
+                    }
+                    const numValue = parseInt(value);
+                    if (!isNaN(numValue)) {
+                      setAttributeDice(Math.max(0, numValue));
+                    }
+                  }}
+                  onBlur={(e) => {
+                    if (e.target.value === '') {
+                      setAttributeDiceInput('0');
+                      setAttributeDice(0);
+                    }
+                  }}
+                />
+                <button
+                  type="button"
+                  aria-label="Increment Attribute Dice"
+                  onClick={() => {
+                    const newValue = attributeDice + 1;
+                    setAttributeDice(newValue);
+                    setAttributeDiceInput(newValue.toString());
+                  }}
+                >
+                  +
+                </button>
+              </div>
             </div>
             <div className="dice-input">
               <label>Skill Dice:</label>
-              <input
-                type="number"
-                className="dice-input-field-skill"
-                min="0"
-                value={skillDiceInput}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setSkillDiceInput(value);
-                  if (value === '') {
-                    return;
-                  }
-                  const numValue = parseInt(value);
-                  if (!isNaN(numValue)) {
-                    setSkillDice(Math.max(0, numValue));
-                  }
-                }}
-                onBlur={(e) => {
-                  if (e.target.value === '') {
-                    setSkillDiceInput('0');
-                    setSkillDice(0);
-                  }
-                }}
-              />
+              <div className="quantity-control dice-quantity-skill">
+                <button
+                  type="button"
+                  aria-label="Decrement Skill Dice"
+                  onClick={() => {
+                    const newValue = Math.max(0, skillDice - 1);
+                    setSkillDice(newValue);
+                    setSkillDiceInput(newValue.toString());
+                  }}
+                >
+                  -
+                </button>
+                <input
+                  type="number"
+                  className="dice-input-field-skill"
+                  min="0"
+                  value={skillDiceInput}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setSkillDiceInput(value);
+                    if (value === '') {
+                      return;
+                    }
+                    const numValue = parseInt(value);
+                    if (!isNaN(numValue)) {
+                      setSkillDice(Math.max(0, numValue));
+                    }
+                  }}
+                  onBlur={(e) => {
+                    if (e.target.value === '') {
+                      setSkillDiceInput('0');
+                      setSkillDice(0);
+                    }
+                  }}
+                />
+                <button
+                  type="button"
+                  aria-label="Increment Skill Dice"
+                  onClick={() => {
+                    const newValue = skillDice + 1;
+                    setSkillDice(newValue);
+                    setSkillDiceInput(newValue.toString());
+                  }}
+                >
+                  +
+                </button>
+              </div>
             </div>
             <div className="dice-input">
               <label>Gear Dice:</label>
-              <input
-                type="number"
-                className="dice-input-field-gear"
-                min="0"
-                value={gearDiceInput}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setGearDiceInput(value);
-                  if (value === '') {
-                    return;
-                  }
-                  const numValue = parseInt(value);
-                  if (!isNaN(numValue)) {
-                    setGearDice(Math.max(0, numValue));
-                  }
-                }}
-                onBlur={(e) => {
-                  if (e.target.value === '') {
-                    setGearDiceInput('0');
-                    setGearDice(0);
-                  }
-                }}
-              />
+              <div className="quantity-control dice-quantity-gear">
+                <button
+                  type="button"
+                  aria-label="Decrement Gear Dice"
+                  onClick={() => {
+                    const newValue = Math.max(0, gearDice - 1);
+                    setGearDice(newValue);
+                    setGearDiceInput(newValue.toString());
+                  }}
+                >
+                  -
+                </button>
+                <input
+                  type="number"
+                  className="dice-input-field-gear"
+                  min="0"
+                  value={gearDiceInput}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setGearDiceInput(value);
+                    if (value === '') {
+                      return;
+                    }
+                    const numValue = parseInt(value);
+                    if (!isNaN(numValue)) {
+                      setGearDice(Math.max(0, numValue));
+                    }
+                  }}
+                  onBlur={(e) => {
+                    if (e.target.value === '') {
+                      setGearDiceInput('0');
+                      setGearDice(0);
+                    }
+                  }}
+                />
+                <button
+                  type="button"
+                  aria-label="Increment Gear Dice"
+                  onClick={() => {
+                    const newValue = gearDice + 1;
+                    setGearDice(newValue);
+                    setGearDiceInput(newValue.toString());
+                  }}
+                >
+                  +
+                </button>
+              </div>
             </div>
           </div>
         </div>
